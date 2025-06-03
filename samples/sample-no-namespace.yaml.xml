@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document>
+  <mapping>
+    <entry key="name">
+      <scalar type="string" tag="tag:yaml.org,2002:str">John Doe</scalar>
+    </entry>
+    <entry key="age">
+      <scalar type="integer" tag="tag:yaml.org,2002:int">30</scalar>
+    </entry>
+    <entry key="skills">
+      <sequence>
+        <item>
+          <scalar type="string" tag="tag:yaml.org,2002:str">Python</scalar>
+        </item>
+        <item>
+          <scalar type="string" tag="tag:yaml.org,2002:str">JavaScript</scalar>
+        </item>
+        <item>
+          <scalar type="string" tag="tag:yaml.org,2002:str">Go</scalar>
+        </item>
+      </sequence>
+    </entry>
+    <entry key="address">
+      <mapping anchor="address-info">
+        <entry key="street">
+          <scalar type="string" tag="tag:yaml.org,2002:str">123 Main St</scalar>
+        </entry>
+        <entry key="city">
+          <scalar type="string" tag="tag:yaml.org,2002:str">Anytown</scalar>
+        </entry>
+        <entry key="zipcode">
+          <scalar type="string" tag="tag:yaml.org,2002:str">12345</scalar>
+        </entry>
+      </mapping>
+    </entry>
+    <entry key="projects">
+      <sequence>
+        <item>
+          <mapping>
+            <entry key="name">
+              <scalar type="string" tag="tag:yaml.org,2002:str">Project A</scalar>
+            </entry>
+            <entry key="status">
+              <scalar type="string" tag="tag:yaml.org,2002:str">active</scalar>
+            </entry>
+          </mapping>
+        </item>
+        <item>
+          <mapping>
+            <entry key="name">
+              <scalar type="string" tag="tag:yaml.org,2002:str">Project B</scalar>
+            </entry>
+            <entry key="status">
+              <scalar type="string" tag="tag:yaml.org,2002:str">completed</scalar>
+            </entry>
+          </mapping>
+        </item>
+      </sequence>
+    </entry>
+    <entry key="active">
+      <scalar type="boolean" tag="tag:yaml.org,2002:bool">true</scalar>
+    </entry>
+    <entry key="score">
+      <scalar type="float" tag="tag:yaml.org,2002:float">95.5</scalar>
+    </entry>
+    <entry key="billing_address">
+      <alias ref="address-info"/>
+    </entry>
+  </mapping>
+</document>

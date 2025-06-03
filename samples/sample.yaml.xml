@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<yaml:document xmlns:yaml="http://yaml.org/xml/1.2">
+  <yaml:directive name="YAML" value="1.2"/>
+  <yaml:mapping>
+    <yaml:entry>
+      <yaml:key>
+        <yaml:scalar type="string">name</yaml:scalar>
+      </yaml:key>
+      <yaml:value>
+        <yaml:scalar type="string" tag="tag:yaml.org,2002:str">John Doe</yaml:scalar>
+      </yaml:value>
+    </yaml:entry>
+    <yaml:entry>
+      <yaml:key>
+        <yaml:scalar type="string">age</yaml:scalar>
+      </yaml:key>
+      <yaml:value>
+        <yaml:scalar type="integer" tag="tag:yaml.org,2002:int">30</yaml:scalar>
+      </yaml:value>
+    </yaml:entry>
+    <yaml:entry>
+      <yaml:key>
+        <yaml:scalar type="string">skills</yaml:scalar>
+      </yaml:key>
+      <yaml:value>
+        <yaml:sequence>
+          <yaml:item>
+            <yaml:scalar type="string" tag="tag:yaml.org,2002:str">Python</yaml:scalar>
+          </yaml:item>
+          <yaml:item>
+            <yaml:scalar type="string" tag="tag:yaml.org,2002:str">JavaScript</yaml:scalar>
+          </yaml:item>
+          <yaml:item>
+            <yaml:scalar type="string" tag="tag:yaml.org,2002:str">Go</yaml:scalar>
+          </yaml:item>
+        </yaml:sequence>
+      </yaml:value>
+    </yaml:entry>
+    <yaml:entry>
+      <yaml:key>
+        <yaml:scalar type="string">address</yaml:scalar>
+      </yaml:key>
+      <yaml:value>
+        <yaml:mapping anchor="address-info">
+          <yaml:entry>
+            <yaml:key>
+              <yaml:scalar type="string">street</yaml:scalar>
+            </yaml:key>
+            <yaml:value>
+              <yaml:scalar type="string" tag="tag:yaml.org,2002:str">123 Main St</yaml:scalar>
+            </yaml:value>
+          </yaml:entry>
+          <yaml:entry>
+            <yaml:key>
+              <yaml:scalar type="string">city</yaml:scalar>
+            </yaml:key>
+            <yaml:value>
+              <yaml:scalar type="string" tag="tag:yaml.org,2002:str">Anytown</yaml:scalar>
+            </yaml:value>
+          </yaml:entry>
+          <yaml:entry>
+            <yaml:key>
+              <yaml:scalar type="string">zipcode</yaml:scalar>
+            </yaml:key>
+            <yaml:value>
+              <yaml:scalar type="string" tag="tag:yaml.org,2002:str">12345</yaml:scalar>
+            </yaml:value>
+          </yaml:entry>
+        </yaml:mapping>
+      </yaml:value>
+    </yaml:entry>
+    <yaml:entry>
+      <yaml:key>
+        <yaml:scalar type="string">projects</yaml:scalar>
+      </yaml:key>
+      <yaml:value>
+        <yaml:sequence>
+          <yaml:item>
+            <yaml:mapping>
+              <yaml:entry>
+                <yaml:key>
+                  <yaml:scalar type="string">name</yaml:scalar>
+                </yaml:key>
+                <yaml:value>
+                  <yaml:scalar type="string" tag="tag:yaml.org,2002:str">Project A</yaml:scalar>
+                </yaml:value>
+              </yaml:entry>
+              <yaml:entry>
+                <yaml:key>
+                  <yaml:scalar type="string">status</yaml:scalar>
+                </yaml:key>
+                <yaml:value>
+                  <yaml:scalar type="string" tag="tag:yaml.org,2002:str">active</yaml:scalar>
+                </yaml:value>
+              </yaml:entry>
+            </yaml:mapping>
+          </yaml:item>
+          <yaml:item>
+            <yaml:mapping>
+              <yaml:entry>
+                <yaml:key>
+                  <yaml:scalar type="string">name</yaml:scalar>
+                </yaml:key>
+                <yaml:value>
+                  <yaml:scalar type="string" tag="tag:yaml.org,2002:str">Project B</yaml:scalar>
+                </yaml:value>
+              </yaml:entry>
+              <yaml:entry>
+                <yaml:key>
+                  <yaml:scalar type="string">status</yaml:scalar>
+                </yaml:key>
+                <yaml:value>
+                  <yaml:scalar type="string" tag="tag:yaml.org,2002:str">completed</yaml:scalar>
+                </yaml:value>
+              </yaml:entry>
+            </yaml:mapping>
+          </yaml:item>
+        </yaml:sequence>
+      </yaml:value>
+    </yaml:entry>
+    <yaml:entry>
+      <yaml:key>
+        <yaml:scalar type="string">active</yaml:scalar>
+      </yaml:key>
+      <yaml:value>
+        <yaml:scalar type="boolean" tag="tag:yaml.org,2002:bool">true</yaml:scalar>
+      </yaml:value>
+    </yaml:entry>
+    <yaml:entry>
+      <yaml:key>
+        <yaml:scalar type="string">score</yaml:scalar>
+      </yaml:key>
+      <yaml:value>
+        <yaml:scalar type="float" tag="tag:yaml.org,2002:float">95.5</yaml:scalar>
+      </yaml:value>
+    </yaml:entry>
+    <yaml:entry>
+      <yaml:key>
+        <yaml:scalar type="string">billing_address</yaml:scalar>
+      </yaml:key>
+      <yaml:value>
+        <yaml:alias ref="address-info"/>
+      </yaml:value>
+    </yaml:entry>
+  </yaml:mapping>
+</yaml:document>

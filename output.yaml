@@ -1,0 +1,17 @@
+name: 'John Doe'
+age: 30
+skills: 
+  - Python
+  - JavaScript
+  - Go
+address: 
+  street: '123 Main St'
+  city: Anytown
+  zipcode: 12345
+projects: 
+  - name: 'Project A'
+    status: active
+  - name: 'Project B'
+    status: completed
+active: true
+score: 95.5

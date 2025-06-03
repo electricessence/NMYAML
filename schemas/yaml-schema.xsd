@@ -1,0 +1,255 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           elementFormDefault="qualified"
+           targetNamespace="http://yaml.org/xml/1.2"
+           xmlns:yaml="http://yaml.org/xml/1.2">
+
+  <!-- 
+    Enhanced YAML XML Schema based on YAML 1.2.2 Specification
+    Supports the three fundamental data types: scalars, sequences, and mappings
+    Includes proper tag handling, anchors/aliases, and YAML-specific constructs
+  -->
+
+  <!-- Root document element representing a YAML document -->
+  <xs:element name="document">
+    <xs:complexType>
+      <xs:sequence>
+        <!-- Optional YAML version directive -->
+        <xs:element name="directive" minOccurs="0" maxOccurs="unbounded">
+          <xs:complexType>
+            <xs:attribute name="name" type="xs:string" use="required"/>
+            <xs:attribute name="value" type="xs:string" use="required"/>
+          </xs:complexType>
+        </xs:element>
+        <!-- Document content - must be one of the three node kinds -->
+        <xs:choice>
+          <xs:element ref="yaml:scalar"/>
+          <xs:element ref="yaml:sequence"/>
+          <xs:element ref="yaml:mapping"/>
+          <xs:element ref="yaml:alias"/>
+        </xs:choice>
+      </xs:sequence>
+      <xs:attribute name="version" type="xs:string" default="1.2"/>
+    </xs:complexType>
+  </xs:element>
+
+  <!-- Scalar node - represents atomic data -->
+  <xs:element name="scalar">
+    <xs:complexType>
+      <xs:simpleContent>
+        <xs:extension base="xs:string">
+          <!-- Explicit tag for the scalar - based on YAML Core Schema -->
+          <xs:attribute name="tag" use="optional">
+            <xs:simpleType>
+              <xs:restriction base="xs:string">
+                <!-- Failsafe Schema tags -->
+                <xs:enumeration value="tag:yaml.org,2002:str"/>
+                <!-- JSON Schema tags -->
+                <xs:enumeration value="tag:yaml.org,2002:null"/>
+                <xs:enumeration value="tag:yaml.org,2002:bool"/>
+                <xs:enumeration value="tag:yaml.org,2002:int"/>
+                <xs:enumeration value="tag:yaml.org,2002:float"/>
+                <!-- Allow custom tags -->
+                <xs:pattern value="tag:.*"/>
+                <xs:pattern value="!.*"/>
+              </xs:restriction>
+            </xs:simpleType>
+          </xs:attribute>
+          
+          <!-- Resolved type for tag resolution -->
+          <xs:attribute name="type" use="optional" default="string">
+            <xs:simpleType>
+              <xs:restriction base="xs:string">
+                <xs:enumeration value="string"/>
+                <xs:enumeration value="null"/>
+                <xs:enumeration value="boolean"/>
+                <xs:enumeration value="integer"/>
+                <xs:enumeration value="float"/>
+                <xs:enumeration value="binary"/>
+                <xs:enumeration value="timestamp"/>
+              </xs:restriction>
+            </xs:simpleType>
+          </xs:attribute>
+          
+          <!-- Scalar presentation style -->
+          <xs:attribute name="style" use="optional">
+            <xs:simpleType>
+              <xs:restriction base="xs:string">
+                <!-- Flow scalar styles -->
+                <xs:enumeration value="plain"/>
+                <xs:enumeration value="single-quoted"/>
+                <xs:enumeration value="double-quoted"/>
+                <!-- Block scalar styles -->
+                <xs:enumeration value="literal"/>
+                <xs:enumeration value="folded"/>
+              </xs:restriction>
+            </xs:simpleType>
+          </xs:attribute>
+          
+          <!-- Block scalar indicators for literal and folded styles -->
+          <xs:attribute name="block-chomping" use="optional">
+            <xs:simpleType>
+              <xs:restriction base="xs:string">
+                <xs:enumeration value="strip"/>    <!-- - indicator -->
+                <xs:enumeration value="clip"/>     <!-- default -->
+                <xs:enumeration value="keep"/>     <!-- + indicator -->
+              </xs:restriction>
+            </xs:simpleType>
+          </xs:attribute>
+          
+          <xs:attribute name="block-indent" type="xs:positiveInteger" use="optional"/>
+          
+          <!-- Node properties -->
+          <xs:attribute name="anchor" type="yaml:anchorName" use="optional"/>
+        </xs:extension>
+      </xs:simpleContent>
+    </xs:complexType>
+  </xs:element>
+
+  <!-- Sequence node - ordered collection -->
+  <xs:element name="sequence">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="yaml:item" minOccurs="0" maxOccurs="unbounded"/>
+      </xs:sequence>
+      
+      <!-- Explicit tag -->
+      <xs:attribute name="tag" use="optional" default="tag:yaml.org,2002:seq">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value="tag:yaml.org,2002:seq"/>
+            <xs:pattern value="tag:.*"/>
+            <xs:pattern value="!.*"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+      
+      <!-- Collection style -->
+      <xs:attribute name="style" use="optional" default="block">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value="block"/>
+            <xs:enumeration value="flow"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+      
+      <!-- Node properties -->
+      <xs:attribute name="anchor" type="yaml:anchorName" use="optional"/>
+    </xs:complexType>
+  </xs:element>
+
+  <!-- Sequence item wrapper -->
+  <xs:element name="item">
+    <xs:complexType>
+      <xs:choice>
+        <xs:element ref="yaml:scalar"/>
+        <xs:element ref="yaml:sequence"/>
+        <xs:element ref="yaml:mapping"/>
+        <xs:element ref="yaml:alias"/>
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+
+  <!-- Mapping node - unordered key-value pairs -->
+  <xs:element name="mapping">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="yaml:entry" minOccurs="0" maxOccurs="unbounded"/>
+      </xs:sequence>
+      
+      <!-- Explicit tag -->
+      <xs:attribute name="tag" use="optional" default="tag:yaml.org,2002:map">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value="tag:yaml.org,2002:map"/>
+            <xs:pattern value="tag:.*"/>
+            <xs:pattern value="!.*"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+      
+      <!-- Collection style -->
+      <xs:attribute name="style" use="optional" default="block">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value="block"/>
+            <xs:enumeration value="flow"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+      
+      <!-- Node properties -->
+      <xs:attribute name="anchor" type="yaml:anchorName" use="optional"/>
+    </xs:complexType>
+  </xs:element>
+
+  <!-- Mapping entry (key-value pair) -->
+  <xs:element name="entry">
+    <xs:complexType>
+      <xs:sequence>
+        <!-- Key node - can be any YAML node type -->
+        <xs:element name="key">
+          <xs:complexType>
+            <xs:choice>
+              <xs:element ref="yaml:scalar"/>
+              <xs:element ref="yaml:sequence"/>
+              <xs:element ref="yaml:mapping"/>
+              <xs:element ref="yaml:alias"/>
+            </xs:choice>
+          </xs:complexType>
+        </xs:element>
+        
+        <!-- Value node - can be any YAML node type -->
+        <xs:element name="value">
+          <xs:complexType>
+            <xs:choice>
+              <xs:element ref="yaml:scalar"/>
+              <xs:element ref="yaml:sequence"/>
+              <xs:element ref="yaml:mapping"/>
+              <xs:element ref="yaml:alias"/>
+            </xs:choice>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+      
+      <!-- Entry style for compact notation -->
+      <xs:attribute name="style" use="optional">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value="explicit"/>  <!-- ? key : value -->
+            <xs:enumeration value="implicit"/>  <!-- key: value -->
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+
+  <!-- Alias node for anchors and references -->
+  <xs:element name="alias">
+    <xs:complexType>
+      <xs:attribute name="ref" type="yaml:anchorName" use="required"/>
+    </xs:complexType>
+  </xs:element>
+
+  <!-- Complex types and restrictions -->
+  
+  <!-- Anchor name restrictions based on YAML spec -->
+  <xs:simpleType name="anchorName">
+    <xs:restriction base="xs:string">
+      <!-- Must not contain flow indicators [ ] { } , -->
+      <xs:pattern value="[^,\[\]{}]+"/>
+      <xs:minLength value="1"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <!-- Document collection for multiple documents in a stream -->
+  <xs:element name="stream">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="yaml:document" minOccurs="0" maxOccurs="unbounded"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+</xs:schema>

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document>
+  <mapping>
+    <entry key="name">
+      <scalar type="string">John Doe</scalar>
+    </entry>
+    <entry key="age">
+      <scalar type="integer">30</scalar>
+    </entry>
+    <entry key="active">
+      <scalar type="boolean">true</scalar>
+    </entry>
+    <entry key="score">
+      <scalar type="float">95.5</scalar>
+    </entry>
+  </mapping>
+</document>
