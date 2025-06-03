@@ -61,7 +61,7 @@ if ($UseNamespaces) {
 # Determine default file paths based on namespace preference
 if ($UseNamespaces -and $XsdFile -eq "yaml-schema-no-namespace.xsd") {
     $XsdFile = "yaml-schema.xsd"
-    Write-InfoMessage "Using namespaced schema: $XsdFile" -NoPrefix $true -ForegroundColor Gray
+    Write-InfoMessage "Using namespaced schema: $XsdFile" -NoPrefix:$true -ForegroundColor Gray
 }
 
 # Validate the input XML if requested
