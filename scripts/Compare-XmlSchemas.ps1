@@ -20,12 +20,7 @@ $scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 $modulesDir = Join-Path $scriptDir "modules"
 $terminalOutputModule = Join-Path $modulesDir "TerminalOutput.psm1"
 
-if (Test-Path $terminalOutputModule) {
-    Import-Module $terminalOutputModule -Force
-} else {
-    Write-Error "Terminal Output module not found at $terminalOutputModule"
-    exit 1
-}
+Import-Module $terminalOutputModule -ErrorAction Stop
 
 Write-Banner -Text "XML Schema Comparison Tool" -ForegroundColor Cyan
 

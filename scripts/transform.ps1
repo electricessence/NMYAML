@@ -1,11 +1,18 @@
 # PowerShell script to transform XML to YAML using XSLT
 param(
-    [string]$XmlFile = "..\samples\sample.yaml.xml",
-    [string]$XsltFile = "..\xslt\xml-to-yaml.xslt",
-    [string]$OutputFile = "..\output\output.yaml"
+    [string]$XmlFile = "samples\sample.yaml.xml",
+    [string]$XsltFile = "xslt\xml-to-yaml.xslt",
+    [string]$OutputFile = "output\output.yaml"
 )
 
 # Check if files exist
+$scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
+$rootDir = Split-Path -Parent $scriptDir
+
+$XmlFile = Join-Path $rootDir $XmlFile
+$XsltFile = Join-Path $rootDir $XsltFile  
+$OutputFile = Join-Path $rootDir $OutputFile
+
 if (-not (Test-Path $XmlFile)) {
     Write-Error "XML file '$XmlFile' not found!"
     exit 1
@@ -31,10 +38,8 @@ try {
     $xslt.Load((Resolve-Path $XsltFile).Path)
     
     Write-Host "Performing transformation..." -ForegroundColor Green
-    
-    # Create output writer
-    $outputPath = Join-Path (Get-Location) $OutputFile
-    $writer = [System.IO.File]::CreateText($outputPath)
+      # Create output writer
+    $writer = [System.IO.File]::CreateText($OutputFile)
     
     # Perform the transformation
     $xslt.Transform($xmlReader, $null, $writer)

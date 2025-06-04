@@ -1,5 +1,5 @@
 # Comprehensive YAML XML Transformation Test Suite
-# Tests all components: schemas, transformations, and encoding
+# Tests all components: schemas, transformations, and $result2 = Test-Transformation -TestName "Namespaced XML" -XmlFile "sample.yaml.xml" -XsltFile "xml-to-yaml.xslt" -OutputFile "test-output-2.yaml" -Description "Testing XML with yaml: namespace prefixes"ncoding
 
 param(
     [switch]$Verbose = $false
@@ -99,7 +99,7 @@ function Test-Schema {
 
 # Test 1: Non-namespaced XML with simple XSLT
 Write-Host ""
-$result1 = Test-Transformation -TestName "Non-Namespaced XML" -XmlFile "sample-no-namespace.yaml.xml" -XsltFile "xml-to-yaml-simple.xslt" -OutputFile "test-output-1.yaml" -Description "Testing XML without namespace prefixes"
+$result1 = Test-Transformation -TestName "Non-Namespaced XML" -XmlFile "sample-no-namespace.yaml.xml" -XsltFile "xml-to-yaml.xslt" -OutputFile "test-output-1.yaml" -Description "Testing XML without namespace prefixes"
 $testResults += @{ Test = "Non-Namespaced XML"; Result = $result1 }
 
 # Test 2: Namespaced XML with simple XSLT
@@ -110,7 +110,7 @@ $testResults += @{ Test = "Namespaced XML"; Result = $result2 }
 # Test 3: Backward compatibility with old format
 if (Test-Path "sample-old-format.xml") {
     Write-Host ""
-    $result3 = Test-Transformation -TestName "Backward Compatibility" -XmlFile "sample-old-format.xml" -XsltFile "xml-to-yaml-simple.xslt" -OutputFile "test-output-3.yaml" -Description "Testing backward compatibility with old XML format"
+    $result3 = Test-Transformation -TestName "Backward Compatibility" -XmlFile "sample-old-format.xml" -XsltFile "xml-to-yaml.xslt" -OutputFile "test-output-3.yaml" -Description "Testing backward compatibility with old XML format"
     $testResults += @{ Test = "Backward Compatibility"; Result = $result3 }
 }
 

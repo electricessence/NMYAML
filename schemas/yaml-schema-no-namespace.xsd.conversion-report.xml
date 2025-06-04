@@ -2,9 +2,242 @@
 <Objects>
   <Object Type="System.Management.Automation.PSCustomObject">
     <Property Name="ConversionReport" Type="System.Management.Automation.PSCustomObject">
-      <Property Name="GeneratedOn" Type="System.DateTime">6/3/2025 7:04:27 PM</Property>
-      <Property Name="TotalChanges" Type="System.Int32">0</Property>
-      <Property Name="Changes" Type="System.Object[]" />
+      <Property Name="GeneratedOn" Type="System.DateTime">6/4/2025 3:44:36 PM</Property>
+      <Property Name="TotalChanges" Type="System.Int32">29</Property>
+      <Property Name="Changes" Type="System.Object[]">
+        <Property Type="System.Management.Automation.PSCustomObject">
+          <Property Name="ChangeType" Type="System.String">RemoveTargetNamespace</Property>
+          <Property Name="Element" Type="System.String">schema</Property>
+          <Property Name="OriginalValue" Type="System.String">http://yaml.org/xml/1.2</Property>
+          <Property Name="NewValue" Type="System.String"></Property>
+          <Property Name="Path" Type="System.String">/xs:schema</Property>
+          <Property Name="Timestamp" Type="System.DateTime">6/4/2025 3:44:36 PM</Property>
+        </Property>
+        <Property Type="System.Management.Automation.PSCustomObject">
+          <Property Name="ChangeType" Type="System.String">RemoveNamespaceDeclaration</Property>
+          <Property Name="Element" Type="System.String">schema</Property>
+          <Property Name="OriginalValue" Type="System.String">xmlns:yaml='http://yaml.org/xml/1.2'</Property>
+          <Property Name="NewValue" Type="System.String"></Property>
+          <Property Name="Path" Type="System.String">/xs:schema</Property>
+          <Property Name="Timestamp" Type="System.DateTime">6/4/2025 3:44:36 PM</Property>
+        </Property>
+        <Property Type="System.Management.Automation.PSCustomObject">
+          <Property Name="ChangeType" Type="System.String">ProcessRootElement</Property>
+          <Property Name="Element" Type="System.String">element</Property>
+          <Property Name="OriginalValue" Type="System.String">document</Property>
+          <Property Name="NewValue" Type="System.String"></Property>
+          <Property Name="Path" Type="System.String">/xs:schema/element[@name='document']/xs:element[@name='document']</Property>
+          <Property Name="Timestamp" Type="System.DateTime">6/4/2025 3:44:36 PM</Property>
+        </Property>
+        <Property Type="System.Management.Automation.PSCustomObject">
+          <Property Name="ChangeType" Type="System.String">ConvertReference</Property>
+          <Property Name="Element" Type="System.String">element</Property>
+          <Property Name="OriginalValue" Type="System.String">yaml:scalar</Property>
+          <Property Name="NewValue" Type="System.String">scalar</Property>
+          <Property Name="Path" Type="System.String">/xs:schema/element[@name='document']/complexType/sequence/choice/element</Property>
+          <Property Name="Timestamp" Type="System.DateTime">6/4/2025 3:44:36 PM</Property>
+        </Property>
+        <Property Type="System.Management.Automation.PSCustomObject">
+          <Property Name="ChangeType" Type="System.String">ConvertReference</Property>
+          <Property Name="Element" Type="System.String">element</Property>
+          <Property Name="OriginalValue" Type="System.String">yaml:sequence</Property>
+          <Property Name="NewValue" Type="System.String">sequence</Property>
+          <Property Name="Path" Type="System.String">/xs:schema/element[@name='document']/complexType/sequence/choice/element</Property>
+          <Property Name="Timestamp" Type="System.DateTime">6/4/2025 3:44:36 PM</Property>
+        </Property>
+        <Property Type="System.Management.Automation.PSCustomObject">
+          <Property Name="ChangeType" Type="System.String">ConvertReference</Property>
+          <Property Name="Element" Type="System.String">element</Property>
+          <Property Name="OriginalValue" Type="System.String">yaml:mapping</Property>
+          <Property Name="NewValue" Type="System.String">mapping</Property>
+          <Property Name="Path" Type="System.String">/xs:schema/element[@name='document']/complexType/sequence/choice/element</Property>
+          <Property Name="Timestamp" Type="System.DateTime">6/4/2025 3:44:36 PM</Property>
+        </Property>
+        <Property Type="System.Management.Automation.PSCustomObject">
+          <Property Name="ChangeType" Type="System.String">ConvertReference</Property>
+          <Property Name="Element" Type="System.String">element</Property>
+          <Property Name="OriginalValue" Type="System.String">yaml:alias</Property>
+          <Property Name="NewValue" Type="System.String">alias</Property>
+          <Property Name="Path" Type="System.String">/xs:schema/element[@name='document']/complexType/sequence/choice/element</Property>
+          <Property Name="Timestamp" Type="System.DateTime">6/4/2025 3:44:36 PM</Property>
+        </Property>
+        <Property Type="System.Management.Automation.PSCustomObject">
+          <Property Name="ChangeType" Type="System.String">ProcessRootElement</Property>
+          <Property Name="Element" Type="System.String">element</Property>
+          <Property Name="OriginalValue" Type="System.String">scalar</Property>
+          <Property Name="NewValue" Type="System.String"></Property>
+          <Property Name="Path" Type="System.String">/xs:schema/element[@name='scalar']/xs:element[@name='scalar']</Property>
+          <Property Name="Timestamp" Type="System.DateTime">6/4/2025 3:44:36 PM</Property>
+        </Property>
+        <Property Type="System.Management.Automation.PSCustomObject">
+          <Property Name="ChangeType" Type="System.String">ProcessRootElement</Property>
+          <Property Name="Element" Type="System.String">element</Property>
+          <Property Name="OriginalValue" Type="System.String">sequence</Property>
+          <Property Name="NewValue" Type="System.String"></Property>
+          <Property Name="Path" Type="System.String">/xs:schema/element[@name='sequence']/xs:element[@name='sequence']</Property>
+          <Property Name="Timestamp" Type="System.DateTime">6/4/2025 3:44:36 PM</Property>
+        </Property>
+        <Property Type="System.Management.Automation.PSCustomObject">
+          <Property Name="ChangeType" Type="System.String">ConvertReference</Property>
+          <Property Name="Element" Type="System.String">element</Property>
+          <Property Name="OriginalValue" Type="System.String">yaml:item</Property>
+          <Property Name="NewValue" Type="System.String">item</Property>
+          <Property Name="Path" Type="System.String">/xs:schema/element[@name='sequence']/complexType/sequence/element</Property>
+          <Property Name="Timestamp" Type="System.DateTime">6/4/2025 3:44:36 PM</Property>
+        </Property>
+        <Property Type="System.Management.Automation.PSCustomObject">
+          <Property Name="ChangeType" Type="System.String">ProcessRootElement</Property>
+          <Property Name="Element" Type="System.String">element</Property>
+          <Property Name="OriginalValue" Type="System.String">item</Property>
+          <Property Name="NewValue" Type="System.String"></Property>
+          <Property Name="Path" Type="System.String">/xs:schema/element[@name='item']/xs:element[@name='item']</Property>
+          <Property Name="Timestamp" Type="System.DateTime">6/4/2025 3:44:36 PM</Property>
+        </Property>
+        <Property Type="System.Management.Automation.PSCustomObject">
+          <Property Name="ChangeType" Type="System.String">ConvertReference</Property>
+          <Property Name="Element" Type="System.String">element</Property>
+          <Property Name="OriginalValue" Type="System.String">yaml:scalar</Property>
+          <Property Name="NewValue" Type="System.String">scalar</Property>
+          <Property Name="Path" Type="System.String">/xs:schema/element[@name='item']/complexType/choice/element</Property>
+          <Property Name="Timestamp" Type="System.DateTime">6/4/2025 3:44:36 PM</Property>
+        </Property>
+        <Property Type="System.Management.Automation.PSCustomObject">
+          <Property Name="ChangeType" Type="System.String">ConvertReference</Property>
+          <Property Name="Element" Type="System.String">element</Property>
+          <Property Name="OriginalValue" Type="System.String">yaml:sequence</Property>
+          <Property Name="NewValue" Type="System.String">sequence</Property>
+          <Property Name="Path" Type="System.String">/xs:schema/element[@name='item']/complexType/choice/element</Property>
+          <Property Name="Timestamp" Type="System.DateTime">6/4/2025 3:44:36 PM</Property>
+        </Property>
+        <Property Type="System.Management.Automation.PSCustomObject">
+          <Property Name="ChangeType" Type="System.String">ConvertReference</Property>
+          <Property Name="Element" Type="System.String">element</Property>
+          <Property Name="OriginalValue" Type="System.String">yaml:mapping</Property>
+          <Property Name="NewValue" Type="System.String">mapping</Property>
+          <Property Name="Path" Type="System.String">/xs:schema/element[@name='item']/complexType/choice/element</Property>
+          <Property Name="Timestamp" Type="System.DateTime">6/4/2025 3:44:36 PM</Property>
+        </Property>
+        <Property Type="System.Management.Automation.PSCustomObject">
+          <Property Name="ChangeType" Type="System.String">ConvertReference</Property>
+          <Property Name="Element" Type="System.String">element</Property>
+          <Property Name="OriginalValue" Type="System.String">yaml:alias</Property>
+          <Property Name="NewValue" Type="System.String">alias</Property>
+          <Property Name="Path" Type="System.String">/xs:schema/element[@name='item']/complexType/choice/element</Property>
+          <Property Name="Timestamp" Type="System.DateTime">6/4/2025 3:44:36 PM</Property>
+        </Property>
+        <Property Type="System.Management.Automation.PSCustomObject">
+          <Property Name="ChangeType" Type="System.String">ProcessRootElement</Property>
+          <Property Name="Element" Type="System.String">element</Property>
+          <Property Name="OriginalValue" Type="System.String">mapping</Property>
+          <Property Name="NewValue" Type="System.String"></Property>
+          <Property Name="Path" Type="System.String">/xs:schema/element[@name='mapping']/xs:element[@name='mapping']</Property>
+          <Property Name="Timestamp" Type="System.DateTime">6/4/2025 3:44:36 PM</Property>
+        </Property>
+        <Property Type="System.Management.Automation.PSCustomObject">
+          <Property Name="ChangeType" Type="System.String">ConvertReference</Property>
+          <Property Name="Element" Type="System.String">element</Property>
+          <Property Name="OriginalValue" Type="System.String">yaml:entry</Property>
+          <Property Name="NewValue" Type="System.String">entry</Property>
+          <Property Name="Path" Type="System.String">/xs:schema/element[@name='mapping']/complexType/sequence/element</Property>
+          <Property Name="Timestamp" Type="System.DateTime">6/4/2025 3:44:36 PM</Property>
+        </Property>
+        <Property Type="System.Management.Automation.PSCustomObject">
+          <Property Name="ChangeType" Type="System.String">ProcessRootElement</Property>
+          <Property Name="Element" Type="System.String">element</Property>
+          <Property Name="OriginalValue" Type="System.String">entry</Property>
+          <Property Name="NewValue" Type="System.String"></Property>
+          <Property Name="Path" Type="System.String">/xs:schema/element[@name='entry']/xs:element[@name='entry']</Property>
+          <Property Name="Timestamp" Type="System.DateTime">6/4/2025 3:44:36 PM</Property>
+        </Property>
+        <Property Type="System.Management.Automation.PSCustomObject">
+          <Property Name="ChangeType" Type="System.String">ConvertReference</Property>
+          <Property Name="Element" Type="System.String">element</Property>
+          <Property Name="OriginalValue" Type="System.String">yaml:scalar</Property>
+          <Property Name="NewValue" Type="System.String">scalar</Property>
+          <Property Name="Path" Type="System.String">/xs:schema/element[@name='entry']/complexType/sequence/element[@name='key']/complexType/choice/element</Property>
+          <Property Name="Timestamp" Type="System.DateTime">6/4/2025 3:44:36 PM</Property>
+        </Property>
+        <Property Type="System.Management.Automation.PSCustomObject">
+          <Property Name="ChangeType" Type="System.String">ConvertReference</Property>
+          <Property Name="Element" Type="System.String">element</Property>
+          <Property Name="OriginalValue" Type="System.String">yaml:sequence</Property>
+          <Property Name="NewValue" Type="System.String">sequence</Property>
+          <Property Name="Path" Type="System.String">/xs:schema/element[@name='entry']/complexType/sequence/element[@name='key']/complexType/choice/element</Property>
+          <Property Name="Timestamp" Type="System.DateTime">6/4/2025 3:44:36 PM</Property>
+        </Property>
+        <Property Type="System.Management.Automation.PSCustomObject">
+          <Property Name="ChangeType" Type="System.String">ConvertReference</Property>
+          <Property Name="Element" Type="System.String">element</Property>
+          <Property Name="OriginalValue" Type="System.String">yaml:mapping</Property>
+          <Property Name="NewValue" Type="System.String">mapping</Property>
+          <Property Name="Path" Type="System.String">/xs:schema/element[@name='entry']/complexType/sequence/element[@name='key']/complexType/choice/element</Property>
+          <Property Name="Timestamp" Type="System.DateTime">6/4/2025 3:44:36 PM</Property>
+        </Property>
+        <Property Type="System.Management.Automation.PSCustomObject">
+          <Property Name="ChangeType" Type="System.String">ConvertReference</Property>
+          <Property Name="Element" Type="System.String">element</Property>
+          <Property Name="OriginalValue" Type="System.String">yaml:alias</Property>
+          <Property Name="NewValue" Type="System.String">alias</Property>
+          <Property Name="Path" Type="System.String">/xs:schema/element[@name='entry']/complexType/sequence/element[@name='key']/complexType/choice/element</Property>
+          <Property Name="Timestamp" Type="System.DateTime">6/4/2025 3:44:36 PM</Property>
+        </Property>
+        <Property Type="System.Management.Automation.PSCustomObject">
+          <Property Name="ChangeType" Type="System.String">ConvertReference</Property>
+          <Property Name="Element" Type="System.String">element</Property>
+          <Property Name="OriginalValue" Type="System.String">yaml:scalar</Property>
+          <Property Name="NewValue" Type="System.String">scalar</Property>
+          <Property Name="Path" Type="System.String">/xs:schema/element[@name='entry']/complexType/sequence/element[@name='value']/complexType/choice/element</Property>
+          <Property Name="Timestamp" Type="System.DateTime">6/4/2025 3:44:36 PM</Property>
+        </Property>
+        <Property Type="System.Management.Automation.PSCustomObject">
+          <Property Name="ChangeType" Type="System.String">ConvertReference</Property>
+          <Property Name="Element" Type="System.String">element</Property>
+          <Property Name="OriginalValue" Type="System.String">yaml:sequence</Property>
+          <Property Name="NewValue" Type="System.String">sequence</Property>
+          <Property Name="Path" Type="System.String">/xs:schema/element[@name='entry']/complexType/sequence/element[@name='value']/complexType/choice/element</Property>
+          <Property Name="Timestamp" Type="System.DateTime">6/4/2025 3:44:36 PM</Property>
+        </Property>
+        <Property Type="System.Management.Automation.PSCustomObject">
+          <Property Name="ChangeType" Type="System.String">ConvertReference</Property>
+          <Property Name="Element" Type="System.String">element</Property>
+          <Property Name="OriginalValue" Type="System.String">yaml:mapping</Property>
+          <Property Name="NewValue" Type="System.String">mapping</Property>
+          <Property Name="Path" Type="System.String">/xs:schema/element[@name='entry']/complexType/sequence/element[@name='value']/complexType/choice/element</Property>
+          <Property Name="Timestamp" Type="System.DateTime">6/4/2025 3:44:36 PM</Property>
+        </Property>
+        <Property Type="System.Management.Automation.PSCustomObject">
+          <Property Name="ChangeType" Type="System.String">ConvertReference</Property>
+          <Property Name="Element" Type="System.String">element</Property>
+          <Property Name="OriginalValue" Type="System.String">yaml:alias</Property>
+          <Property Name="NewValue" Type="System.String">alias</Property>
+          <Property Name="Path" Type="System.String">/xs:schema/element[@name='entry']/complexType/sequence/element[@name='value']/complexType/choice/element</Property>
+          <Property Name="Timestamp" Type="System.DateTime">6/4/2025 3:44:36 PM</Property>
+        </Property>
+        <Property Type="System.Management.Automation.PSCustomObject">
+          <Property Name="ChangeType" Type="System.String">ProcessRootElement</Property>
+          <Property Name="Element" Type="System.String">element</Property>
+          <Property Name="OriginalValue" Type="System.String">alias</Property>
+          <Property Name="NewValue" Type="System.String"></Property>
+          <Property Name="Path" Type="System.String">/xs:schema/element[@name='alias']/xs:element[@name='alias']</Property>
+          <Property Name="Timestamp" Type="System.DateTime">6/4/2025 3:44:36 PM</Property>
+        </Property>
+        <Property Type="System.Management.Automation.PSCustomObject">
+          <Property Name="ChangeType" Type="System.String">ProcessRootElement</Property>
+          <Property Name="Element" Type="System.String">element</Property>
+          <Property Name="OriginalValue" Type="System.String">stream</Property>
+          <Property Name="NewValue" Type="System.String"></Property>
+          <Property Name="Path" Type="System.String">/xs:schema/element[@name='stream']/xs:element[@name='stream']</Property>
+          <Property Name="Timestamp" Type="System.DateTime">6/4/2025 3:44:36 PM</Property>
+        </Property>
+        <Property Type="System.Management.Automation.PSCustomObject">
+          <Property Name="ChangeType" Type="System.String">ConvertReference</Property>
+          <Property Name="Element" Type="System.String">element</Property>
+          <Property Name="OriginalValue" Type="System.String">yaml:document</Property>
+          <Property Name="NewValue" Type="System.String">document</Property>
+          <Property Name="Path" Type="System.String">/xs:schema/element[@name='stream']/complexType/sequence/element</Property>
+          <Property Name="Timestamp" Type="System.DateTime">6/4/2025 3:44:36 PM</Property>
+        </Property>
+      </Property>
     </Property>
   </Object>
 </Objects>

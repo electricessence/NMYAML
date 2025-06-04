@@ -9,13 +9,13 @@ $scriptsDir = Join-Path $scriptDir "scripts"
 $sampleXml = Join-Path $scriptDir "samples\sample.yaml.xml"
 $noNamespaceXml = Join-Path $scriptDir "samples\sample-no-namespace.yaml.xml"
 $outputYaml = Join-Path $scriptDir "output-terminal-test.yaml"
-$xsltFile = Join-Path $scriptDir "xslt\xml-to-yaml-universal.xslt"
+$xsltFile = Join-Path $scriptDir "xslt\xml-to-yaml.xslt"
 $schemaFile = Join-Path $scriptDir "schemas\yaml-schema.xsd"
 $noNamespaceSchemaFile = Join-Path $scriptDir "schemas\yaml-schema-no-namespace.xsd"
 
 # Import the TerminalOutput module directly to show its capabilities
 $terminalModulePath = Join-Path $scriptDir "scripts\modules\TerminalOutput.psm1"
-Import-Module $terminalModulePath -Force
+Import-Module $terminalModulePath -ErrorAction Stop
 
 # Display a welcome banner
 Write-Banner -Text "YAML-XML Terminal Output Demo" -ForegroundColor Cyan -Width 60
@@ -123,9 +123,7 @@ $rootObject = [PSCustomObject]@{
         },
         [PSCustomObject]@{
             Name = "xslt"
-            Children = @(
-                [PSCustomObject]@{ Name = "xml-to-yaml-universal.xslt"; Children = @() },
-                [PSCustomObject]@{ Name = "xml-to-yaml-simple.xslt"; Children = @() }
+            Children = @(                [PSCustomObject]@{ Name = "xml-to-yaml.xslt"; Children = @() }
             )
         },
         [PSCustomObject]@{

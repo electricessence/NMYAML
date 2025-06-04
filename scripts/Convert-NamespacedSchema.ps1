@@ -24,16 +24,11 @@ $modulesDir = Join-Path $scriptDir "modules"
 $terminalOutputModule = Join-Path $modulesDir "TerminalOutput.psm1"
 $reportModulePath = Join-Path $modulesDir "SchemaConversionReport.psm1"
 
-if (Test-Path $terminalOutputModule) {
-    Import-Module $terminalOutputModule -Force
-} else {
-    Write-Error "Terminal Output module not found at $terminalOutputModule"
-    exit 1
-}
+Import-Module $terminalOutputModule -ErrorAction Stop
 
 # Import the schema conversion report module if it exists
-if (Test-Path $reportModulePath) {
-    Import-Module $reportModulePath -Force
+Import-Module $reportModulePath -ErrorAction Stop
+if (Get-Command "Clear-ConversionLog" -ErrorAction SilentlyContinue) {
     Clear-ConversionLog  # Initialize a clean log
 } else {
     Write-Warning "Schema Conversion Report module not found. Detailed reporting will be disabled."
@@ -115,7 +110,7 @@ try {
                 if ($refValue.Contains("yaml:")) {
                     $newRefValue = $refValue -replace "yaml:", ""
                     $node.Attributes["ref"].Value = $newRefValue
-                    Write-InfoMessage "  Converted ref: $refValue → $newRefValue" -NoPrefix:$true -ForegroundColor Gray
+                    Write-InfoMessage "  Converted ref: $refValue → $newRefValue"
                     
                     # Log the change if reporting is enabled
                     if ($GenerateReport -and (Get-Command "Add-ConversionLogEntry" -ErrorAction SilentlyContinue)) {
@@ -129,7 +124,7 @@ try {
             # This is specific to this schema conversion and may need adjustments for other schemas
             if ($node.LocalName -eq "element" -and $node.Attributes["name"] -ne $null -and $node.ParentNode.LocalName -eq "schema") {
                 $elemName = $node.Attributes["name"].Value
-                Write-InfoMessage "  Processing root element: $elemName" -NoPrefix:$true -ForegroundColor Gray
+                Write-InfoMessage "  Processing root element: $elemName"
                 
                 # Log the processing of root elements if reporting is enabled
                 if ($GenerateReport -and (Get-Command "Add-ConversionLogEntry" -ErrorAction SilentlyContinue)) {

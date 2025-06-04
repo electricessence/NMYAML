@@ -6,16 +6,23 @@
   <xsl:output method="text" encoding="UTF-8" indent="no"/>
   <xsl:strip-space elements="*"/>
 
-  <!-- Root template -->
-  <xsl:template match="yaml:document">
-    <xsl:apply-templates select="yaml:scalar | yaml:sequence | yaml:mapping"/>
+  <!-- Root template - handles both namespaced and non-namespaced -->
+  <xsl:template match="document | yaml:document">
+    <xsl:apply-templates select="*[local-name()='scalar' or local-name()='sequence' or local-name()='mapping']"/>
   </xsl:template>
 
-  <!-- Scalar template -->
-  <xsl:template match="yaml:scalar">
+  <!-- Scalar template - handles both namespaced and non-namespaced -->
+  <xsl:template match="scalar | yaml:scalar">
     <xsl:param name="indent" select="0"/>
-    <xsl:choose>
-      <xsl:when test="@type = 'string' and (contains(., ' ') or contains(., ':') or contains(., '#') or contains(., '''') or contains(., '&quot;'))">
+    
+    <!-- Add anchor if present -->
+    <xsl:if test="@anchor">
+      <xsl:text>&amp;</xsl:text>
+      <xsl:value-of select="@anchor"/>
+      <xsl:text> </xsl:text>
+    </xsl:if>
+      <xsl:choose>
+      <xsl:when test="@type = 'string' and (contains(., ' ') or contains(., ':') or contains(., '#') or contains(., &quot;'&quot;) or contains(., '&quot;') or starts-with(., '-') or starts-with(., '[') or starts-with(., '{'))">
         <xsl:text>"</xsl:text>
         <xsl:call-template name="escape-string">
           <xsl:with-param name="text" select="."/>
@@ -42,28 +49,25 @@
         <xsl:value-of select="."/>
       </xsl:otherwise>
     </xsl:choose>
-    <!-- Add anchor if present -->
-    <xsl:if test="@anchor">
-      <xsl:text> &amp;</xsl:text>
-      <xsl:value-of select="@anchor"/>
-    </xsl:if>
   </xsl:template>
 
-  <!-- Sequence template -->
-  <xsl:template match="yaml:sequence">
+  <!-- Sequence template - handles both namespaced and non-namespaced -->
+  <xsl:template match="sequence | yaml:sequence">
     <xsl:param name="indent" select="0"/>
+    
     <!-- Add anchor if present -->
     <xsl:if test="@anchor">
       <xsl:text>&amp;</xsl:text>
       <xsl:value-of select="@anchor"/>
       <xsl:text> </xsl:text>
     </xsl:if>
+    
     <xsl:choose>
-      <xsl:when test="count(yaml:item) = 0">
+      <xsl:when test="count(*[local-name()='item']) = 0">
         <xsl:text>[]</xsl:text>
       </xsl:when>
       <xsl:otherwise>
-        <xsl:for-each select="yaml:item">
+        <xsl:for-each select="*[local-name()='item']">
           <xsl:if test="position() > 1">
             <xsl:text>&#10;</xsl:text>
             <xsl:call-template name="indent">
@@ -79,56 +83,85 @@
     </xsl:choose>
   </xsl:template>
 
-  <!-- Mapping template -->
-  <xsl:template match="yaml:mapping">
+  <!-- Mapping template - handles both namespaced and non-namespaced -->
+  <xsl:template match="mapping | yaml:mapping">
     <xsl:param name="indent" select="0"/>
+    
     <!-- Add anchor if present -->
     <xsl:if test="@anchor">
       <xsl:text>&amp;</xsl:text>
       <xsl:value-of select="@anchor"/>
       <xsl:text> </xsl:text>
     </xsl:if>
+    
     <xsl:choose>
-      <xsl:when test="count(yaml:entry) = 0">
+      <xsl:when test="count(*[local-name()='entry']) = 0">
         <xsl:text>{}</xsl:text>
       </xsl:when>
       <xsl:otherwise>
-        <xsl:for-each select="yaml:entry">
+        <xsl:for-each select="*[local-name()='entry']">
           <xsl:if test="position() > 1">
             <xsl:text>&#10;</xsl:text>
             <xsl:call-template name="indent">
               <xsl:with-param name="level" select="$indent"/>
             </xsl:call-template>
           </xsl:if>
-          <!-- Handle key -->
-          <xsl:apply-templates select="yaml:key/*">
-            <xsl:with-param name="indent" select="$indent"/>
-          </xsl:apply-templates>
-          <xsl:text>: </xsl:text>
-          <!-- Handle value -->
+          
+          <!-- Handle different entry formats -->
           <xsl:choose>
-            <xsl:when test="yaml:value/yaml:mapping or yaml:value/yaml:sequence">
-              <xsl:text>&#10;</xsl:text>
-              <xsl:call-template name="indent">
-                <xsl:with-param name="level" select="$indent + 1"/>
-              </xsl:call-template>
-              <xsl:apply-templates select="yaml:value/*">
-                <xsl:with-param name="indent" select="$indent + 1"/>
-              </xsl:apply-templates>
+            <!-- Simple attribute-based key -->
+            <xsl:when test="@key">
+              <xsl:value-of select="@key"/>
+              <xsl:text>: </xsl:text>
+              <xsl:choose>
+                <xsl:when test="*[local-name()='mapping' or local-name()='sequence']">
+                  <xsl:text>&#10;</xsl:text>
+                  <xsl:call-template name="indent">
+                    <xsl:with-param name="level" select="$indent + 1"/>
+                  </xsl:call-template>
+                  <xsl:apply-templates select="*">
+                    <xsl:with-param name="indent" select="$indent + 1"/>
+                  </xsl:apply-templates>
+                </xsl:when>
+                <xsl:otherwise>
+                  <xsl:apply-templates select="*">
+                    <xsl:with-param name="indent" select="$indent"/>
+                  </xsl:apply-templates>
+                </xsl:otherwise>
+              </xsl:choose>
             </xsl:when>
-            <xsl:otherwise>
-              <xsl:apply-templates select="yaml:value/*">
+            
+            <!-- Complex key-value structure -->
+            <xsl:when test="*[local-name()='key']">
+              <xsl:apply-templates select="*[local-name()='key']/*">
                 <xsl:with-param name="indent" select="$indent"/>
               </xsl:apply-templates>
-            </xsl:otherwise>
+              <xsl:text>: </xsl:text>
+              <xsl:choose>
+                <xsl:when test="*[local-name()='value']/*[local-name()='mapping' or local-name()='sequence']">
+                  <xsl:text>&#10;</xsl:text>
+                  <xsl:call-template name="indent">
+                    <xsl:with-param name="level" select="$indent + 1"/>
+                  </xsl:call-template>
+                  <xsl:apply-templates select="*[local-name()='value']/*">
+                    <xsl:with-param name="indent" select="$indent + 1"/>
+                  </xsl:apply-templates>
+                </xsl:when>
+                <xsl:otherwise>
+                  <xsl:apply-templates select="*[local-name()='value']/*">
+                    <xsl:with-param name="indent" select="$indent"/>
+                  </xsl:apply-templates>
+                </xsl:otherwise>
+              </xsl:choose>
+            </xsl:when>
           </xsl:choose>
         </xsl:for-each>
       </xsl:otherwise>
     </xsl:choose>
   </xsl:template>
 
-  <!-- Alias template for anchor references -->
-  <xsl:template match="yaml:alias">
+  <!-- Alias template for anchor references - handles both namespaced and non-namespaced -->
+  <xsl:template match="alias | yaml:alias">
     <xsl:param name="indent" select="0"/>
     <xsl:text>*</xsl:text>
     <xsl:value-of select="@ref"/>

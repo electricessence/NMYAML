@@ -8,7 +8,7 @@ param(
     [string]$XmlFile = "..\samples\sample.yaml.xml",
     
     [Parameter(Mandatory=$false)]
-    [string]$XsltFile = "..\xslt\xml-to-yaml-universal.xslt",
+    [string]$XsltFile = "..\xslt\xml-to-yaml.xslt",
     
     [Parameter(Mandatory=$false)]
     [string]$OutputFile = "..\output.yaml",
@@ -31,19 +31,8 @@ $modulesPath = Join-Path $PSScriptRoot "modules"
 $utilsModulePath = Join-Path $modulesPath "XmlYamlUtils.psm1"
 $terminalModulePath = Join-Path $modulesPath "TerminalOutput.psm1"
 
-if (Test-Path $utilsModulePath) {
-    Import-Module $utilsModulePath -Force
-} else {
-    Write-Error "Module not found at path: $utilsModulePath"
-    exit 1
-}
-
-if (Test-Path $terminalModulePath) {
-    Import-Module $terminalModulePath -Force
-} else {
-    Write-Error "Module not found at path: $terminalModulePath"
-    exit 1
-}
+Import-Module $utilsModulePath -ErrorAction Stop
+Import-Module $terminalModulePath -ErrorAction Stop
 
 # Banner
 Write-Banner -Text "XML-YAML Transformation Tool" -ForegroundColor Cyan

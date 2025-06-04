@@ -96,15 +96,15 @@ Write-Host "Running test cases..." -ForegroundColor Cyan
 Write-Host ""
 
 # Test 1: Non-namespaced XML
-$test1 = Test-Transformation -TestName "Non-namespaced XML Support" -XmlFile "sample-no-namespace.yaml.xml" -XsltFile "xml-to-yaml-simple.xslt" -OutputFile "test-output-1.yaml"
+$test1 = Test-Transformation -TestName "Non-namespaced XML Support" -XmlFile "sample-no-namespace.yaml.xml" -XsltFile "xml-to-yaml.xslt" -OutputFile "test-output-1.yaml"
 $testResults += @{Name="Non-namespaced XML"; Result=$test1}
 
 # Test 2: Namespaced XML
-$test2 = Test-Transformation -TestName "Namespaced XML Support" -XmlFile "sample.yaml.xml" -XsltFile "xml-to-yaml-simple.xslt" -OutputFile "test-output-2.yaml"
+$test2 = Test-Transformation -TestName "Namespaced XML Support" -XmlFile "sample.yaml.xml" -XsltFile "xml-to-yaml.xslt" -OutputFile "test-output-2.yaml"
 $testResults += @{Name="Namespaced XML"; Result=$test2}
 
 # Test 3: Backward compatibility
-$test3 = Test-Transformation -TestName "Backward Compatibility" -XmlFile "sample-old-format.xml" -XsltFile "xml-to-yaml-simple.xslt" -OutputFile "test-output-3.yaml"
+$test3 = Test-Transformation -TestName "Backward Compatibility" -XmlFile "sample-old-format.xml" -XsltFile "xml-to-yaml.xslt" -OutputFile "test-output-3.yaml"
 $testResults += @{Name="Backward Compatibility"; Result=$test3}
 
 # Test 4: File handle management

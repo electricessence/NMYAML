@@ -3,9 +3,7 @@
 
 # Import TerminalOutput module if available
 $terminalModulePath = Join-Path $PSScriptRoot "TerminalOutput.psm1"
-if (Test-Path $terminalModulePath) {
-    Import-Module $terminalModulePath -Force -ErrorAction SilentlyContinue
-}
+Import-Module $terminalModulePath -ErrorAction Stop
 
 <#
 .SYNOPSIS
@@ -121,8 +119,8 @@ function Test-SchemaFlexibility {
     
     try {
         if (Get-Command "Write-InfoMessage" -ErrorAction SilentlyContinue) {
-            Write-InfoMessage "Testing schema flexibility..." -ForegroundColor Yellow
-            Write-InfoMessage "Schema: $SchemaPath" -NoPrefix:$true -ForegroundColor Gray
+            Write-InfoMessage "Testing schema flexibility..."
+            Write-InfoMessage "Schema: $SchemaPath"
         } else {
             Write-Host "Testing schema flexibility..." -ForegroundColor Yellow
             Write-Host "Schema: $SchemaPath" -ForegroundColor Gray
@@ -153,17 +151,17 @@ function Test-SchemaFlexibility {
                 Error = $_.Exception.Message
             }
         }
-          # Test with namespaced XML
+        
+        # Test with namespaced XML
         if (Get-Command "Write-InfoMessage" -ErrorAction SilentlyContinue) {
-            Write-InfoMessage "Testing with namespaced XML: $NamespacedXmlPath" -NoPrefix:$true -ForegroundColor Gray
+            Write-InfoMessage "Testing with namespaced XML: $NamespacedXmlPath"
         } else {
             Write-Host "`nTesting with namespaced XML: $NamespacedXmlPath" -ForegroundColor Gray
         }
         $nsResult = Test-XmlAgainstSchema -XmlPath $NamespacedXmlPath -SchemaPath $SchemaPath
-        
         # Test with non-namespaced XML
         if (Get-Command "Write-InfoMessage" -ErrorAction SilentlyContinue) {
-            Write-InfoMessage "Testing with non-namespaced XML: $NonNamespacedXmlPath" -NoPrefix:$true -ForegroundColor Gray
+            Write-InfoMessage "Testing with non-namespaced XML: $NonNamespacedXmlPath"
         } else {
             Write-Host "`nTesting with non-namespaced XML: $NonNamespacedXmlPath" -ForegroundColor Gray
         }
@@ -181,10 +179,11 @@ function Test-SchemaFlexibility {
         } else {
             if (Get-Command "Write-ErrorMessage" -ErrorAction SilentlyContinue) {
                 Write-ErrorMessage "Schema is NOT FLEXIBLE"
-                if (-not $nsResult.Success) {                    Write-InfoMessage "- Failed with namespaced XML" -ForegroundColor Red -NoPrefix:$true
+                if (-not $nsResult.Success) {
+                    Write-InfoMessage "- Failed with namespaced XML"
                 }
                 if (-not $nonNsResult.Success) {
-                    Write-InfoMessage "- Failed with non-namespaced XML" -ForegroundColor Red -NoPrefix:$true
+                    Write-InfoMessage "- Failed with non-namespaced XML"
                 }
             } else {
                 Write-Host "`n❌ Schema is NOT FLEXIBLE" -ForegroundColor Red
@@ -298,11 +297,10 @@ function Test-XmlAgainstSchema {
                 Errors = @()
             }
         }
-        else {
-            if (Get-Command "Write-ErrorMessage" -ErrorAction SilentlyContinue) {
+        else {            if (Get-Command "Write-ErrorMessage" -ErrorAction SilentlyContinue) {
                 Write-ErrorMessage "Validation failed with $($validationErrors.Count) errors:"
                 foreach ($error in $validationErrors) {
-                    Write-InfoMessage "- $error" -ForegroundColor Red -NoPrefix:$true
+                    Write-InfoMessage "- $error"
                 }
             } else {
                 Write-Host "❌ Validation failed with $($validationErrors.Count) errors:" -ForegroundColor Red

@@ -47,7 +47,8 @@ goto end
 
 :transform_xml
 echo.
-call scripts\transform.bat
+echo Transforming samples\sample.yaml.xml to output\output.yaml using xslt\xml-to-yaml.xslt...
+powershell -ExecutionPolicy Bypass -File "scripts\Convert-YamlXml.ps1" -XmlFile "samples\sample.yaml.xml" -XsltFile "xslt\xml-to-yaml.xslt" -OutputFile "output\output.yaml" -ShowOutput
 goto end
 
 :run_demo_suite

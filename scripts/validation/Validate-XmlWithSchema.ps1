@@ -13,9 +13,8 @@ param(
     
     [Parameter(Mandatory=$false)]
     [switch]$ForceNoNamespace = $false,
-    
     [Parameter(Mandatory=$false)]
-    [switch]$Verbose = $false
+    [switch]$ShowDetails = $false
 )
 
 # Banner
@@ -25,14 +24,16 @@ Write-Host "=========================================================" -Foregrou
 
 # Resolve paths
 $scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
-$projectRoot = Split-Path -Parent $scriptDir
+$validationDir = $scriptDir  # This is scripts\validation
+$scriptsDir = Split-Path -Parent $validationDir  # This is scripts
+$projectRoot = Split-Path -Parent $scriptsDir  # This is the actual project root
 
 # If relative paths are provided, make them absolute
 if (-not [System.IO.Path]::IsPathRooted($XmlFilePath)) {
-    $XmlFilePath = Join-Path $projectRoot $XmlFilePath.TrimStart("..\")
+    $XmlFilePath = Join-Path $projectRoot ($XmlFilePath -replace '^\.\.[/\\]\.\.[\\/]', '')
 }
 if (-not [System.IO.Path]::IsPathRooted($SchemaFilePath)) {
-    $SchemaFilePath = Join-Path $projectRoot $SchemaFilePath.TrimStart("..\")
+    $SchemaFilePath = Join-Path $projectRoot ($SchemaFilePath -replace '^\.\.[/\\]\.\.[\\/]', '')
 }
 
 # Verify files exist
@@ -360,7 +361,7 @@ elseif (-not $xmlHasNamespace -and $schemaTargetNamespace -and -not $ForceNamesp
 # Perform validation
 Write-Host
 Write-Host "Running Validation..." -ForegroundColor Yellow
-$validationResult = Test-XmlWithSchemaEnhanced -XmlPath $XmlFilePath -SchemaPath $SchemaFilePath -TargetNamespace $targetNs -VerboseLogging:$Verbose
+$validationResult = Test-XmlWithSchemaEnhanced -XmlPath $XmlFilePath -SchemaPath $SchemaFilePath -TargetNamespace $targetNs -VerboseLogging:$ShowDetails
 
 # Report results
 Write-Host

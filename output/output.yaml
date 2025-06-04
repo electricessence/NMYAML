@@ -1,17 +1,19 @@
-name: 'John Doe'
+name: "John Doe"
 age: 30
 skills: 
   - Python
   - JavaScript
   - Go
 address: 
-  street: '123 Main St'
+  &address-info
+  street: "123 Main St"
   city: Anytown
   zipcode: 12345
 projects: 
-  - name: 'Project A'
+  - name: "Project A"
     status: active
-  - name: 'Project B'
+  - name: "Project B"
     status: completed
 active: true
 score: 95.5
+billing_address: *address-info

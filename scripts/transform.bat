@@ -1,9 +1,9 @@
 @echo off
 REM Batch script to transform XML to YAML using PowerShell and XSLT
 
-set XML_FILE=..\samples\sample.yaml.xml
-set XSLT_FILE=..\xslt\xml-to-yaml.xslt
-set OUTPUT_FILE=..\output\output.yaml
+set XML_FILE=samples\sample.yaml.xml
+set XSLT_FILE=xslt\xml-to-yaml.xslt
+set OUTPUT_FILE=output\output.yaml
 
 if "%1" neq "" set XML_FILE=%1
 if "%2" neq "" set XSLT_FILE=%2

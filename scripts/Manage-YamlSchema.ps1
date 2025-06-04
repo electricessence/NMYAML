@@ -26,19 +26,8 @@ $modulesPath = Join-Path $PSScriptRoot "modules"
 $schemaModulePath = Join-Path $modulesPath "XmlYamlSchema.psm1"
 $terminalModulePath = Join-Path $modulesPath "TerminalOutput.psm1"
 
-if (Test-Path $schemaModulePath) {
-    Import-Module $schemaModulePath -Force
-} else {
-    Write-Error "Module not found at path: $schemaModulePath"
-    exit 1
-}
-
-if (Test-Path $terminalModulePath) {
-    Import-Module $terminalModulePath -Force
-} else {
-    Write-Error "Module not found at path: $terminalModulePath"
-    exit 1
-}
+Import-Module $schemaModulePath -ErrorAction Stop
+Import-Module $terminalModulePath -ErrorAction Stop
 
 # Banner
 Write-Banner -Text "YAML XML Schema Manager" -ForegroundColor Cyan

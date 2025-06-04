@@ -18,8 +18,8 @@ $modulesDir = Join-Path $scriptDir "modules"
 $schemaModulePath = Join-Path $modulesDir "XmlYamlSchema.psm1"
 $terminalModulePath = Join-Path $modulesDir "TerminalOutput.psm1"
 
-Import-Module $schemaModulePath -Force
-Import-Module $terminalModulePath -Force
+Import-Module $schemaModulePath -Force -ErrorAction Stop -Scope Local
+Import-Module $terminalModulePath -ErrorAction Stop
 
 # Banner
 Write-Banner -Text "Schema Conversion Test Suite" -ForegroundColor Cyan

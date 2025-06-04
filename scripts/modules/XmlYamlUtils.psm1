@@ -3,9 +3,7 @@
 
 # Import TerminalOutput module if available
 $terminalModulePath = Join-Path $PSScriptRoot "TerminalOutput.psm1"
-if (Test-Path $terminalModulePath) {
-    Import-Module $terminalModulePath -Force -ErrorAction SilentlyContinue
-}
+Import-Module $terminalModulePath -ErrorAction Stop
 
 #region Validation Functions
 
@@ -42,9 +40,8 @@ function Test-XmlValidation {
     } else {
         Write-Host "`nTesting: $Description" -ForegroundColor Yellow
     }
-    
-    if (Get-Command "Write-InfoMessage" -ErrorAction SilentlyContinue) {        Write-InfoMessage "XML: $XmlFile" -ForegroundColor Gray -NoPrefix:$true
-        Write-InfoMessage "XSD: $XsdFile" -ForegroundColor Gray -NoPrefix:$true
+      if (Get-Command "Write-InfoMessage" -ErrorAction SilentlyContinue) {        Write-InfoMessage "XML: $XmlFile"
+        Write-InfoMessage "XSD: $XsdFile"
     } else {
         Write-Host "XML: $XmlFile" -ForegroundColor Gray
         Write-Host "XSD: $XsdFile" -ForegroundColor Gray
@@ -57,7 +54,7 @@ function Test-XmlValidation {
         $targetNs = if ($matches) { $matches[1] } else { $null }
         
         if (Get-Command "Write-InfoMessage" -ErrorAction SilentlyContinue) {
-            Write-InfoMessage "Schema target namespace: $(if ($targetNs) { $targetNs } else { '(none)' })" -ForegroundColor Gray -NoPrefix:$true
+            Write-InfoMessage "Schema target namespace: $(if ($targetNs) { $targetNs } else { '(none)' })"
         } else {
             Write-Host "   Schema target namespace: $(if ($targetNs) { $targetNs } else { '(none)' })" -ForegroundColor Gray
         }
@@ -116,7 +113,7 @@ function Test-XmlValidation {
             if (Get-Command "Write-ErrorMessage" -ErrorAction SilentlyContinue) {
                 Write-ErrorMessage "VALIDATION FAILED"
                 foreach ($error in $validationErrors) {
-                    Write-InfoMessage "Error: $error" -ForegroundColor Red -NoPrefix:$true
+                    Write-InfoMessage "Error: $error"
                 }
             } else {
                 Write-Host "❌ VALIDATION FAILED" -ForegroundColor Red
