@@ -567,9 +567,8 @@ function Write-SyntaxHighlight {
                     
                     Write-Host -NoNewline $indent
                     Write-Host -NoNewline $tagStart -ForegroundColor DarkCyan
-                    Write-Host -NoNewline $tagName -ForegroundColor Cyan
-                      # Highlight attributes
-                    $attributes = $attributes -replace '(\w+)=("[^"]*")', '${1}@${2}'
+                    Write-Host -NoNewline $tagName -ForegroundColor Cyan                    # Highlight attributes
+                    $attributes = $attributes -replace '(\w+)=("[^"]*")', '${1}=@${2}'
                     $attributeParts = $attributes -split '@'
                     
                     foreach ($part in $attributeParts) {
