@@ -3,18 +3,18 @@
 
 # Get the script directory
 $scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
-$scriptsDir = Join-Path $scriptDir "scripts"
+$scriptsDir = Join-Path $scriptDir "..\scripts"
 
 # Define paths for the XML-YAML conversion demo
-$sampleXml = Join-Path $scriptDir "samples\sample.yaml.xml"
-$noNamespaceXml = Join-Path $scriptDir "samples\sample-no-namespace.yaml.xml"
+$sampleXml = Join-Path $scriptDir "..\samples\sample.yaml.xml"
+$noNamespaceXml = Join-Path $scriptDir "..\samples\sample-no-namespace.yaml.xml"
 $outputYaml = Join-Path $scriptDir "output-terminal-test.yaml"
-$xsltFile = Join-Path $scriptDir "xslt\xml-to-yaml.xslt"
-$schemaFile = Join-Path $scriptDir "schemas\yaml-schema.xsd"
-$noNamespaceSchemaFile = Join-Path $scriptDir "schemas\yaml-schema-no-namespace.xsd"
+$xsltFile = Join-Path $scriptDir "..\xslt\xml-to-yaml.xslt"
+$schemaFile = Join-Path $scriptDir "..\schemas\yaml-schema.xsd"
+$noNamespaceSchemaFile = Join-Path $scriptDir "..\schemas\yaml-schema-no-namespace.xsd"
 
 # Import the TerminalOutput module directly to show its capabilities
-$terminalModulePath = Join-Path $scriptDir "scripts\modules\TerminalOutput.psm1"
+$terminalModulePath = Join-Path $scriptDir "..\scripts\modules\TerminalOutput.psm1"
 Import-Module $terminalModulePath -ErrorAction Stop
 
 # Display a welcome banner
