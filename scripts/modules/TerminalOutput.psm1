@@ -321,9 +321,8 @@ function Show-ActivitySpinner {
         [Parameter(Mandatory = $false)]
         [string]$Message = "Working..."
     )
-    
-    # Spinner characters for animation
-    $spinnerChars = @('|', '/', '-', '\')
+      # Spinner characters for animation
+    $spinnerChars = @('|', '/', '-', '\\')
     $cursorPosition = $host.UI.RawUI.CursorPosition
     $spinnerIndex = 0
     $jobDone = $false
