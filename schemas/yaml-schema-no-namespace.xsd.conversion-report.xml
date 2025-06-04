@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Objects>
+  <Object Type="System.Management.Automation.PSCustomObject">
+    <Property Name="ConversionReport" Type="System.Management.Automation.PSCustomObject">
+      <Property Name="GeneratedOn" Type="System.DateTime">6/3/2025 7:04:27 PM</Property>
+      <Property Name="TotalChanges" Type="System.Int32">0</Property>
+      <Property Name="Changes" Type="System.Object[]" />
+    </Property>
+  </Object>
+</Objects>

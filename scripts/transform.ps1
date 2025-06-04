@@ -1,8 +1,8 @@
 # PowerShell script to transform XML to YAML using XSLT
 param(
-    [string]$XmlFile = "sample.yaml.xml",
-    [string]$XsltFile = "xml-to-yaml.xslt",
-    [string]$OutputFile = "output.yaml"
+    [string]$XmlFile = "..\samples\sample.yaml.xml",
+    [string]$XsltFile = "..\xslt\xml-to-yaml.xslt",
+    [string]$OutputFile = "..\output\output.yaml"
 )
 
 # Check if files exist

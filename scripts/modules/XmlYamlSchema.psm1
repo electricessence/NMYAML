@@ -131,11 +131,14 @@ function Test-SchemaFlexibility {
         # Load the schema
         $schemaSet = New-Object System.Xml.Schema.XmlSchemaSet
         $schema = $null
-        
-        try {
-            # First attempt to load the schema
-            $schema = $schemaSet.Add($null, (Resolve-Path $SchemaPath).Path)
-            $schemaSet.Compile()
+          try {
+            # First attempt to load the schema - use direct path to avoid Resolve-Path issues
+            if (Test-Path $SchemaPath) {
+                $schema = $schemaSet.Add($null, $SchemaPath)
+                $schemaSet.Compile()
+            } else {
+                throw "Schema file not found: $SchemaPath"
+            }
         }
         catch {
             if (Get-Command "Write-ErrorMessage" -ErrorAction SilentlyContinue) {
@@ -241,10 +244,14 @@ function Test-XmlAgainstSchema {
         $settings = New-Object System.Xml.XmlReaderSettings
         $settings.ValidationType = [System.Xml.ValidationType]::Schema
         $settings.ValidationFlags = [System.Xml.Schema.XmlSchemaValidationFlags]::ProcessIdentityConstraints
-        
-        # Add the schema
+          # Add the schema
         try {
-            $settings.Schemas.Add($null, (Resolve-Path $SchemaPath).Path)
+            # Check if the schema path exists before adding it
+            if (Test-Path $SchemaPath) {
+                $settings.Schemas.Add($null, $SchemaPath)
+            } else {
+                throw "Schema file not found: $SchemaPath"
+            }
         }
         catch {
             return [PSCustomObject]@{
@@ -259,15 +266,19 @@ function Test-XmlAgainstSchema {
             param($sender, $e)
             $validationErrors += $e.Message
         })
-        
-        # Validate the XML
+          # Validate the XML
         try {
-            $reader = [System.Xml.XmlReader]::Create((Resolve-Path $XmlPath).Path, $settings)
-            try {
-                while ($reader.Read()) { }
-            }
-            finally {
-                if ($reader) { $reader.Close() }
+            # Check if the XML path exists before creating the reader
+            if (Test-Path $XmlPath) {
+                $reader = [System.Xml.XmlReader]::Create($XmlPath, $settings)
+                try {
+                    while ($reader.Read()) { }
+                }
+                finally {
+                    if ($reader) { $reader.Close() }
+                }
+            } else {
+                throw "XML file not found: $XmlPath"
             }
         }
         catch {
