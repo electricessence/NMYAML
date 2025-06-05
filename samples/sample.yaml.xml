@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<yaml:document xmlns:yaml="http://yaml.org/xml/1.2">
+<yaml:document xmlns:yaml="http://yaml.org/xml/1.2" 
+               xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+               xsi:schemaLocation="http://yaml.org/xml/1.2 ../schemas/yaml-schema.xsd">
   <yaml:directive name="YAML" value="1.2"/>
   <yaml:mapping>
     <yaml:entry>

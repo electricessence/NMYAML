@@ -3,8 +3,7 @@
 param(
     [Parameter(Mandatory=$false)]
     [string]$Mode = "xml-to-yaml", # Options: xml-to-yaml, yaml-to-xml
-    
-    [Parameter(Mandatory=$false)]
+      [Parameter(Mandatory=$false)]
     [string]$XmlFile = "..\samples\sample.yaml.xml",
     
     [Parameter(Mandatory=$false)]
@@ -67,6 +66,25 @@ if ($ValidateInput) {
         }
     } else {
         Write-SuccessMessage "XML validation passed"
+    }
+}
+
+# Resolve file paths relative to script location
+# If running from parent directory, make paths relative to current working directory instead
+if (-not [System.IO.Path]::IsPathRooted($XmlFile)) {
+    if ($XmlFile.StartsWith("..\")) {
+        # Convert relative-to-script paths to relative-to-current-directory
+        $XmlFile = $XmlFile.Substring(3)  # Remove ".." part
+    }
+}
+if (-not [System.IO.Path]::IsPathRooted($XsltFile)) {
+    if ($XsltFile.StartsWith("..\")) {
+        $XsltFile = $XsltFile.Substring(3)  # Remove ".." part  
+    }
+}
+if (-not [System.IO.Path]::IsPathRooted($OutputFile)) {
+    if ($OutputFile.StartsWith("..\")) {
+        $OutputFile = $OutputFile.Substring(3)  # Remove ".." part
     }
 }
 
