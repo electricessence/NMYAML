@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gh:workflow xmlns:gh="http://github.com/actions/1.0" 
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://github.com/actions/1.0 ../schemas/github-actions-schema.xsd">
+
+  <gh:name>CI/CD Pipeline</gh:name>
+  <gh:run-name>Build and Deploy ${{ github.ref_name }}</gh:run-name>
+
+  <gh:on>
+    <gh:push>
+      <gh:branches>
+        <gh:item>main</gh:item>
+        <gh:item>develop</gh:item>
+      </gh:branches>
+      <gh:paths>
+        <gh:item>src/**</gh:item>
+        <gh:item>package.json</gh:item>
+      </gh:paths>
+    </gh:push>
+    <gh:pull_request>
+      <gh:branches>
+        <gh:item>main</gh:item>
+      </gh:branches>
+      <gh:types>
+        <gh:item>opened</gh:item>
+        <gh:item>synchronize</gh:item>
+      </gh:types>
+    </gh:pull_request>
+    <gh:workflow_dispatch>
+      <gh:inputs>
+        <gh:input name="environment">
+          <gh:description>Target environment</gh:description>
+          <gh:required>true</gh:required>
+          <gh:type>choice</gh:type>
+          <gh:options>
+            <gh:item>development</gh:item>
+            <gh:item>staging</gh:item>
+            <gh:item>production</gh:item>
+          </gh:options>
+        </gh:input>
+        <gh:input name="debug">
+          <gh:description>Enable debug mode</gh:description>
+          <gh:type>boolean</gh:type>
+          <gh:default>false</gh:default>
+        </gh:input>
+      </gh:inputs>
+    </gh:workflow_dispatch>
+    <gh:schedule>
+      <gh:cron schedule="0 2 * * *"/>
+    </gh:schedule>
+  </gh:on>
+
+  <gh:env>
+    <gh:var name="NODE_VERSION">18</gh:var>
+    <gh:var name="REGISTRY_URL">ghcr.io</gh:var>
+  </gh:env>
+
+  <gh:concurrency>
+    <gh:group>${{ github.workflow }}-${{ github.ref }}</gh:group>
+    <gh:cancel-in-progress>true</gh:cancel-in-progress>
+  </gh:concurrency>
+
+  <gh:permissions>
+    <gh:contents>read</gh:contents>
+    <gh:packages>write</gh:packages>
+    <gh:security-events>write</gh:security-events>
+  </gh:permissions>
+
+  <gh:jobs>
+    <gh:job id="test">
+      <gh:name>Run Tests</gh:name>
+      <gh:runs-on>
+        <gh:runner>ubuntu-latest</gh:runner>
+      </gh:runs-on>
+      
+      <gh:strategy>
+        <gh:matrix>
+          <gh:node-version>
+            <gh:item>16</gh:item>
+            <gh:item>18</gh:item>
+            <gh:item>20</gh:item>
+          </gh:node-version>
+          <gh:os>
+            <gh:item>ubuntu-latest</gh:item>
+            <gh:item>windows-latest</gh:item>
+          </gh:os>
+        </gh:matrix>
+        <gh:fail-fast>false</gh:fail-fast>
+      </gh:strategy>
+
+      <gh:steps>
+        <gh:step>
+          <gh:name>Checkout code</gh:name>
+          <gh:uses>actions/checkout@v4</gh:uses>
+          <gh:with>
+            <gh:param name="fetch-depth">0</gh:param>
+          </gh:with>
+        </gh:step>
+
+        <gh:step>
+          <gh:name>Setup Node.js</gh:name>
+          <gh:uses>actions/setup-node@v4</gh:uses>
+          <gh:with>
+            <gh:param name="node-version">${{ matrix.node-version }}</gh:param>
+            <gh:param name="cache">npm</gh:param>
+          </gh:with>
+        </gh:step>
+
+        <gh:step>
+          <gh:name>Install dependencies</gh:name>
+          <gh:run>npm ci</gh:run>
+        </gh:step>
+
+        <gh:step>
+          <gh:name>Run linting</gh:name>
+          <gh:run>npm run lint</gh:run>
+        </gh:step>
+
+        <gh:step>
+          <gh:name>Run tests</gh:name>
+          <gh:run>npm test -- --coverage</gh:run>
+          <gh:env>
+            <gh:var name="CI">true</gh:var>
+            <gh:var name="NODE_OPTIONS">--max_old_space_size=4096</gh:var>
+          </gh:env>
+        </gh:step>
+
+        <gh:step>
+          <gh:name>Upload coverage reports</gh:name>
+          <gh:uses>codecov/codecov-action@v3</gh:uses>
+          <gh:if>matrix.node-version == '18' &amp;&amp; matrix.os == 'ubuntu-latest'</gh:if>
+          <gh:with>
+            <gh:param name="token">${{ secrets.CODECOV_TOKEN }}</gh:param>
+            <gh:param name="file">./coverage/lcov.info</gh:param>
+          </gh:with>
+        </gh:step>
+      </gh:steps>
+    </gh:job>
+
+    <gh:job id="build">
+      <gh:name>Build Application</gh:name>
+      <gh:runs-on>
+        <gh:runner>ubuntu-latest</gh:runner>
+      </gh:runs-on>
+      <gh:needs>
+        <gh:item>test</gh:item>
+      </gh:needs>
+      
+      <gh:steps>
+        <gh:step>
+          <gh:name>Checkout code</gh:name>
+          <gh:uses>actions/checkout@v4</gh:uses>
+        </gh:step>
+
+        <gh:step>
+          <gh:name>Setup Node.js</gh:name>
+          <gh:uses>actions/setup-node@v4</gh:uses>
+          <gh:with>
+            <gh:param name="node-version">${{ env.NODE_VERSION }}</gh:param>
+            <gh:param name="cache">npm</gh:param>
+          </gh:with>
+        </gh:step>
+
+        <gh:step>
+          <gh:name>Install dependencies</gh:name>
+          <gh:run>npm ci</gh:run>
+        </gh:step>
+
+        <gh:step>
+          <gh:name>Build application</gh:name>
+          <gh:run>|
+            echo "Building for environment: ${{ inputs.environment || 'production' }}"
+            npm run build
+            echo "Build completed successfully"
+          </gh:run>
+          <gh:env>
+            <gh:var name="NODE_ENV">production</gh:var>
+            <gh:var name="BUILD_ENV">${{ inputs.environment || 'production' }}</gh:var>
+          </gh:env>
+        </gh:step>
+
+        <gh:step>
+          <gh:name>Upload build artifacts</gh:name>
+          <gh:uses>actions/upload-artifact@v3</gh:uses>
+          <gh:with>
+            <gh:param name="name">build-files</gh:param>
+            <gh:param name="path">dist/</gh:param>
+            <gh:param name="retention-days">7</gh:param>
+          </gh:with>
+        </gh:step>
+      </gh:steps>
+    </gh:job>
+
+    <gh:job id="deploy">
+      <gh:name>Deploy to ${{ inputs.environment || 'production' }}</gh:name>
+      <gh:runs-on>
+        <gh:runner>ubuntu-latest</gh:runner>
+      </gh:runs-on>
+      <gh:needs>
+        <gh:item>build</gh:item>
+      </gh:needs>
+      <gh:if>github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch'</gh:if>
+      
+      <gh:env>
+        <gh:var name="DEPLOY_ENV">${{ inputs.environment || 'production' }}</gh:var>
+      </gh:env>
+
+      <gh:steps>
+        <gh:step>
+          <gh:name>Download build artifacts</gh:name>
+          <gh:uses>actions/download-artifact@v3</gh:uses>
+          <gh:with>
+            <gh:param name="name">build-files</gh:param>
+            <gh:param name="path">dist/</gh:param>
+          </gh:with>
+        </gh:step>
+
+        <gh:step>
+          <gh:name>Deploy to environment</gh:name>
+          <gh:run>|
+            echo "Deploying to $DEPLOY_ENV environment"
+            # Add your deployment commands here
+            echo "Deployment completed successfully"
+          </gh:run>
+          <gh:if>env.DEPLOY_ENV != 'production' || github.actor == 'admin'</gh:if>
+        </gh:step>
+      </gh:steps>
+    </gh:job>
+  </gh:jobs>
+
+</gh:workflow>
