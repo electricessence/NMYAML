@@ -3,14 +3,15 @@
 param(
     [Parameter(Mandatory=$false)]
     [string]$Mode = "xml-to-yaml", # Options: xml-to-yaml, yaml-to-xml
-      [Parameter(Mandatory=$false)]
+
+    [Parameter(Mandatory=$false)]
     [string]$XmlFile = "..\samples\sample.yaml.xml",
-    
+
     [Parameter(Mandatory=$false)]
     [string]$XsltFile = "..\xslt\xml-to-yaml.xslt",
     
     [Parameter(Mandatory=$false)]
-    [string]$OutputFile = "..\output.yaml",
+    [string]$OutputFile = "..\output\converted.yaml",
     
     [Parameter(Mandatory=$false)]
     [switch]$ValidateInput,
