@@ -197,8 +197,7 @@
     </xsl:if>
   </xsl:template>
 
-  <!-- Schedule template -->
-  <xsl:template match="gh:schedule">
+  <!-- Schedule template -->  <xsl:template match="gh:schedule">
     <xsl:param name="indent" select="0"/>
     <xsl:for-each select="gh:cron">
       <xsl:call-template name="indent">
@@ -208,6 +207,75 @@
       <xsl:value-of select="@schedule"/>
       <xsl:text>'&#10;</xsl:text>
     </xsl:for-each>
+  </xsl:template>
+
+  <!-- Workflow dispatch inputs -->
+  <xsl:template match="gh:workflow_dispatch">
+    <xsl:param name="indent" select="0"/>
+    <xsl:if test="gh:inputs">
+      <xsl:call-template name="indent">
+        <xsl:with-param name="level" select="$indent"/>
+      </xsl:call-template>
+      <xsl:text>inputs:&#10;</xsl:text>
+      <xsl:for-each select="gh:inputs/gh:input">
+        <xsl:call-template name="indent">
+          <xsl:with-param name="level" select="$indent + 1"/>
+        </xsl:call-template>
+        <xsl:value-of select="@name"/>
+        <xsl:text>:&#10;</xsl:text>
+        
+        <xsl:if test="gh:description">
+          <xsl:call-template name="indent">
+            <xsl:with-param name="level" select="$indent + 2"/>
+          </xsl:call-template>
+          <xsl:text>description: '</xsl:text>
+          <xsl:value-of select="gh:description"/>
+          <xsl:text>'&#10;</xsl:text>
+        </xsl:if>
+        
+        <xsl:if test="gh:required">
+          <xsl:call-template name="indent">
+            <xsl:with-param name="level" select="$indent + 2"/>
+          </xsl:call-template>
+          <xsl:text>required: </xsl:text>
+          <xsl:value-of select="gh:required"/>
+          <xsl:text>&#10;</xsl:text>
+        </xsl:if>
+        
+        <xsl:if test="gh:type">
+          <xsl:call-template name="indent">
+            <xsl:with-param name="level" select="$indent + 2"/>
+          </xsl:call-template>
+          <xsl:text>type: </xsl:text>
+          <xsl:value-of select="gh:type"/>
+          <xsl:text>&#10;</xsl:text>
+        </xsl:if>
+        
+        <xsl:if test="gh:default">
+          <xsl:call-template name="indent">
+            <xsl:with-param name="level" select="$indent + 2"/>
+          </xsl:call-template>
+          <xsl:text>default: </xsl:text>
+          <xsl:value-of select="gh:default"/>
+          <xsl:text>&#10;</xsl:text>
+        </xsl:if>
+        
+        <xsl:if test="gh:options">
+          <xsl:call-template name="indent">
+            <xsl:with-param name="level" select="$indent + 2"/>
+          </xsl:call-template>
+          <xsl:text>options:&#10;</xsl:text>
+          <xsl:for-each select="gh:options/gh:item">
+            <xsl:call-template name="indent">
+              <xsl:with-param name="level" select="$indent + 3"/>
+            </xsl:call-template>
+            <xsl:text>- </xsl:text>
+            <xsl:value-of select="."/>
+            <xsl:text>&#10;</xsl:text>
+          </xsl:for-each>
+        </xsl:if>
+      </xsl:for-each>
+    </xsl:if>
   </xsl:template>
 
   <!-- Environment variables -->
@@ -647,25 +715,47 @@
       </xsl:otherwise>
     </xsl:choose>
   </xsl:template>
-
   <xsl:template name="multiline-text">
     <xsl:param name="text"/>
     <xsl:param name="indent" select="0"/>
-    <xsl:call-template name="indent">
-      <xsl:with-param name="level" select="$indent"/>
-    </xsl:call-template>
+    
+    <!-- Remove leading | and whitespace if present -->
+    <xsl:variable name="cleanText">
+      <xsl:choose>
+        <xsl:when test="starts-with(normalize-space($text), '|')">
+          <xsl:value-of select="substring-after($text, '|')"/>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:value-of select="$text"/>
+        </xsl:otherwise>
+      </xsl:choose>
+    </xsl:variable>
+    
+    <!-- Process each line -->
     <xsl:choose>
-      <xsl:when test="contains($text, '&#10;')">
-        <xsl:value-of select="substring-before($text, '&#10;')"/>
-        <xsl:text>&#10;</xsl:text>
+      <xsl:when test="contains($cleanText, '&#10;')">
+        <xsl:variable name="firstLine" select="normalize-space(substring-before($cleanText, '&#10;'))"/>
+        <xsl:if test="$firstLine != ''">
+          <xsl:call-template name="indent">
+            <xsl:with-param name="level" select="$indent"/>
+          </xsl:call-template>
+          <xsl:value-of select="$firstLine"/>
+          <xsl:text>&#10;</xsl:text>
+        </xsl:if>
         <xsl:call-template name="multiline-text">
-          <xsl:with-param name="text" select="substring-after($text, '&#10;')"/>
+          <xsl:with-param name="text" select="substring-after($cleanText, '&#10;')"/>
           <xsl:with-param name="indent" select="$indent"/>
         </xsl:call-template>
       </xsl:when>
       <xsl:otherwise>
-        <xsl:value-of select="$text"/>
-        <xsl:text>&#10;</xsl:text>
+        <xsl:variable name="lastLine" select="normalize-space($cleanText)"/>
+        <xsl:if test="$lastLine != ''">
+          <xsl:call-template name="indent">
+            <xsl:with-param name="level" select="$indent"/>
+          </xsl:call-template>
+          <xsl:value-of select="$lastLine"/>
+          <xsl:text>&#10;</xsl:text>
+        </xsl:if>
       </xsl:otherwise>
     </xsl:choose>
   </xsl:template>
