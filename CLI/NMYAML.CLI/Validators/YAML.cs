@@ -45,7 +45,6 @@ public static class YAML
 			yield return result;
 		}
 	}
-
 	/// <summary>
 	/// Validates YAML syntax
 	/// </summary>
@@ -61,16 +60,49 @@ public static class YAML
 			var deserializer = new DeserializerBuilder().Build();
 			deserializer.Deserialize(yamlContent);
 			return Task.FromResult<ValidationResult?>(null); // Success
-		}
-		catch (YamlException ex)
+		}		catch (YamlException ex)
 		{
+			// Extract detailed position information
+			var line = (int)ex.Start.Line;
+			var column = (int)ex.Start.Column;
+			var endLine = (int)ex.End.Line;
+			var endColumn = (int)ex.End.Column;
+			
+			// Create detailed error message with position info
+			var detailedMessage = $"YAML syntax error: {ex.Message}";
+			if (line > 0)
+			{
+				detailedMessage += $" (Line {line}, Column {column}";
+				if (endLine != line || endColumn != column)
+				{
+					detailedMessage += $" to Line {endLine}, Column {endColumn}";
+				}
+
+				detailedMessage += ")";
+			}
+
 			return Task.FromResult<ValidationResult?>(new ValidationResult("Syntax", ValidationSeverity.Error,
-				$"YAML syntax error: {ex.Message}", ex.Start.Line, ""));
+				detailedMessage, line, GetContextLine(yamlContent, line)));
 		}
 		catch (Exception ex)
 		{
 			return Task.FromResult<ValidationResult?>(new ValidationResult("Exception", ValidationSeverity.Error,
 				$"Error reading YAML content: {ex.Message}", 0, ""));
 		}
+	}
+
+	/// <summary>
+	/// Get the context line from YAML content for error reporting
+	/// </summary>
+	private static string GetContextLine(string yamlContent, int lineNumber)
+	{
+		if (lineNumber <= 0 || string.IsNullOrEmpty(yamlContent))
+			return "";
+
+		var lines = yamlContent.Split('\n');
+		if (lineNumber > lines.Length)
+			return "";
+
+		return lines[lineNumber - 1].TrimEnd('\r'); // Remove carriage return if present
 	}
 }

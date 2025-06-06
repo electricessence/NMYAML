@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" 
-           xmlns:gh="http://github.com/actions/1.0"
-           targetNamespace="http://github.com/actions/1.0"
-           elementFormDefault="qualified">
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  xmlns:gh="http://github.com/actions/1.0"
+  targetNamespace="http://github.com/actions/1.0"
+  elementFormDefault="qualified">
 
   <!-- 
     GitHub Actions Workflow XML Schema
@@ -15,28 +15,28 @@
     <xs:complexType>
       <xs:all>
         <!-- Workflow name (optional) -->
-        <xs:element name="name" type="xs:string" minOccurs="0"/>
-        
+        <xs:element name="name" type="xs:string" minOccurs="0" />
+
         <!-- Run name (optional) -->
-        <xs:element name="run-name" type="xs:string" minOccurs="0"/>
-        
+        <xs:element name="run-name" type="xs:string" minOccurs="0" />
+
         <!-- Workflow triggers -->
-        <xs:element name="on" type="gh:TriggerType" minOccurs="0"/>
-        
+        <xs:element name="on" type="gh:TriggerType" minOccurs="0" />
+
         <!-- Environment variables -->
-        <xs:element name="env" type="gh:EnvironmentType" minOccurs="0"/>
-        
+        <xs:element name="env" type="gh:EnvironmentType" minOccurs="0" />
+
         <!-- Default settings -->
-        <xs:element name="defaults" type="gh:DefaultsType" minOccurs="0"/>
-        
+        <xs:element name="defaults" type="gh:DefaultsType" minOccurs="0" />
+
         <!-- Concurrency settings -->
-        <xs:element name="concurrency" type="gh:ConcurrencyType" minOccurs="0"/>
-        
+        <xs:element name="concurrency" type="gh:ConcurrencyType" minOccurs="0" />
+
         <!-- Permissions -->
-        <xs:element name="permissions" type="gh:PermissionsType" minOccurs="0"/>
-        
+        <xs:element name="permissions" type="gh:PermissionsType" minOccurs="0" />
+
         <!-- Jobs -->
-        <xs:element name="jobs" type="gh:JobsType"/>
+        <xs:element name="jobs" type="gh:JobsType" />
       </xs:all>
     </xs:complexType>
   </xs:element>
@@ -45,45 +45,45 @@
   <xs:complexType name="TriggerType">
     <xs:choice maxOccurs="unbounded">
       <!-- Simple triggers -->
-      <xs:element name="push" type="gh:PushTriggerType" minOccurs="0"/>
-      <xs:element name="pull_request" type="gh:PullRequestTriggerType" minOccurs="0"/>
-      <xs:element name="pull_request_target" type="gh:PullRequestTriggerType" minOccurs="0"/>
-      <xs:element name="schedule" type="gh:ScheduleTriggerType" minOccurs="0"/>
-      <xs:element name="workflow_dispatch" type="gh:WorkflowDispatchType" minOccurs="0"/>
-      <xs:element name="workflow_call" type="gh:WorkflowCallType" minOccurs="0"/>
-      <xs:element name="repository_dispatch" type="gh:RepositoryDispatchType" minOccurs="0"/>
-      
+      <xs:element name="push" type="gh:PushTriggerType" minOccurs="0" />
+      <xs:element name="pull_request" type="gh:PullRequestTriggerType" minOccurs="0" />
+      <xs:element name="pull_request_target" type="gh:PullRequestTriggerType" minOccurs="0" />
+      <xs:element name="schedule" type="gh:ScheduleTriggerType" minOccurs="0" />
+      <xs:element name="workflow_dispatch" type="gh:WorkflowDispatchType" minOccurs="0" />
+      <xs:element name="workflow_call" type="gh:WorkflowCallType" minOccurs="0" />
+      <xs:element name="repository_dispatch" type="gh:RepositoryDispatchType" minOccurs="0" />
+
       <!-- Webhook events -->
-      <xs:element name="issues" type="gh:IssuesTriggerType" minOccurs="0"/>
-      <xs:element name="issue_comment" type="gh:IssueCommentTriggerType" minOccurs="0"/>
-      <xs:element name="release" type="gh:ReleaseTriggerType" minOccurs="0"/>
-      <xs:element name="fork" type="xs:boolean" minOccurs="0"/>
-      <xs:element name="watch" type="xs:boolean" minOccurs="0"/>
-      <xs:element name="create" type="xs:boolean" minOccurs="0"/>
-      <xs:element name="delete" type="xs:boolean" minOccurs="0"/>
+      <xs:element name="issues" type="gh:IssuesTriggerType" minOccurs="0" />
+      <xs:element name="issue_comment" type="gh:IssueCommentTriggerType" minOccurs="0" />
+      <xs:element name="release" type="gh:ReleaseTriggerType" minOccurs="0" />
+      <xs:element name="fork" type="xs:boolean" minOccurs="0" />
+      <xs:element name="watch" type="xs:boolean" minOccurs="0" />
+      <xs:element name="create" type="xs:boolean" minOccurs="0" />
+      <xs:element name="delete" type="xs:boolean" minOccurs="0" />
     </xs:choice>
   </xs:complexType>
 
   <!-- Push trigger -->
   <xs:complexType name="PushTriggerType">
     <xs:all>
-      <xs:element name="branches" type="gh:StringListType" minOccurs="0"/>
-      <xs:element name="branches-ignore" type="gh:StringListType" minOccurs="0"/>
-      <xs:element name="tags" type="gh:StringListType" minOccurs="0"/>
-      <xs:element name="tags-ignore" type="gh:StringListType" minOccurs="0"/>
-      <xs:element name="paths" type="gh:StringListType" minOccurs="0"/>
-      <xs:element name="paths-ignore" type="gh:StringListType" minOccurs="0"/>
+      <xs:element name="branches" type="gh:StringListType" minOccurs="0" />
+      <xs:element name="branches-ignore" type="gh:StringListType" minOccurs="0" />
+      <xs:element name="tags" type="gh:StringListType" minOccurs="0" />
+      <xs:element name="tags-ignore" type="gh:StringListType" minOccurs="0" />
+      <xs:element name="paths" type="gh:StringListType" minOccurs="0" />
+      <xs:element name="paths-ignore" type="gh:StringListType" minOccurs="0" />
     </xs:all>
   </xs:complexType>
 
   <!-- Pull request trigger -->
   <xs:complexType name="PullRequestTriggerType">
     <xs:all>
-      <xs:element name="types" type="gh:StringListType" minOccurs="0"/>
-      <xs:element name="branches" type="gh:StringListType" minOccurs="0"/>
-      <xs:element name="branches-ignore" type="gh:StringListType" minOccurs="0"/>
-      <xs:element name="paths" type="gh:StringListType" minOccurs="0"/>
-      <xs:element name="paths-ignore" type="gh:StringListType" minOccurs="0"/>
+      <xs:element name="types" type="gh:StringListType" minOccurs="0" />
+      <xs:element name="branches" type="gh:StringListType" minOccurs="0" />
+      <xs:element name="branches-ignore" type="gh:StringListType" minOccurs="0" />
+      <xs:element name="paths" type="gh:StringListType" minOccurs="0" />
+      <xs:element name="paths-ignore" type="gh:StringListType" minOccurs="0" />
     </xs:all>
   </xs:complexType>
 
@@ -94,7 +94,7 @@
         <xs:complexType>
           <xs:simpleContent>
             <xs:extension base="xs:string">
-              <xs:attribute name="schedule" type="xs:string" use="required"/>
+              <xs:attribute name="schedule" type="xs:string" use="required" />
             </xs:extension>
           </xs:simpleContent>
         </xs:complexType>
@@ -105,189 +105,188 @@
   <!-- Workflow dispatch -->
   <xs:complexType name="WorkflowDispatchType">
     <xs:all>
-      <xs:element name="inputs" type="gh:InputsType" minOccurs="0"/>
+      <xs:element name="inputs" type="gh:InputsType" minOccurs="0" />
     </xs:all>
   </xs:complexType>
 
   <!-- Workflow call -->
   <xs:complexType name="WorkflowCallType">
     <xs:all>
-      <xs:element name="inputs" type="gh:InputsType" minOccurs="0"/>
-      <xs:element name="secrets" type="gh:SecretsType" minOccurs="0"/>
-      <xs:element name="outputs" type="gh:OutputsType" minOccurs="0"/>
+      <xs:element name="inputs" type="gh:InputsType" minOccurs="0" />
+      <xs:element name="secrets" type="gh:SecretsType" minOccurs="0" />
+      <xs:element name="outputs" type="gh:OutputsType" minOccurs="0" />
     </xs:all>
   </xs:complexType>
 
   <!-- Repository dispatch -->
   <xs:complexType name="RepositoryDispatchType">
     <xs:all>
-      <xs:element name="types" type="gh:StringListType" minOccurs="0"/>
+      <xs:element name="types" type="gh:StringListType" minOccurs="0" />
     </xs:all>
   </xs:complexType>
 
   <!-- Issues trigger -->
   <xs:complexType name="IssuesTriggerType">
     <xs:all>
-      <xs:element name="types" type="gh:StringListType" minOccurs="0"/>
+      <xs:element name="types" type="gh:StringListType" minOccurs="0" />
     </xs:all>
   </xs:complexType>
 
   <!-- Issue comment trigger -->
   <xs:complexType name="IssueCommentTriggerType">
     <xs:all>
-      <xs:element name="types" type="gh:StringListType" minOccurs="0"/>
+      <xs:element name="types" type="gh:StringListType" minOccurs="0" />
     </xs:all>
   </xs:complexType>
 
   <!-- Release trigger -->
   <xs:complexType name="ReleaseTriggerType">
     <xs:all>
-      <xs:element name="types" type="gh:StringListType" minOccurs="0"/>
+      <xs:element name="types" type="gh:StringListType" minOccurs="0" />
     </xs:all>
   </xs:complexType>
 
   <!-- Jobs collection -->
   <xs:complexType name="JobsType">
     <xs:sequence>
-      <xs:element name="job" type="gh:JobType" maxOccurs="unbounded"/>
+      <xs:element name="job" type="gh:JobType" maxOccurs="unbounded" />
     </xs:sequence>
   </xs:complexType>
 
   <!-- Individual job -->
   <xs:complexType name="JobType">
     <xs:all>
-      <xs:element name="name" type="xs:string" minOccurs="0"/>
-      <xs:element name="runs-on" type="gh:RunsOnType"/>
-      <xs:element name="needs" type="gh:StringListType" minOccurs="0"/>
-      <xs:element name="if" type="xs:string" minOccurs="0"/>
-      <xs:element name="permissions" type="gh:PermissionsType" minOccurs="0"/>
-      <xs:element name="env" type="gh:EnvironmentType" minOccurs="0"/>
-      <xs:element name="defaults" type="gh:DefaultsType" minOccurs="0"/>
-      <xs:element name="concurrency" type="gh:ConcurrencyType" minOccurs="0"/>
-      <xs:element name="outputs" type="gh:JobOutputsType" minOccurs="0"/>
-      <xs:element name="timeout-minutes" type="xs:int" minOccurs="0"/>
-      <xs:element name="strategy" type="gh:StrategyType" minOccurs="0"/>
-      <xs:element name="continue-on-error" type="xs:boolean" minOccurs="0"/>
-      <xs:element name="container" type="gh:ContainerType" minOccurs="0"/>
-      <xs:element name="services" type="gh:ServicesType" minOccurs="0"/>
-      <xs:element name="uses" type="xs:string" minOccurs="0"/>
-      <xs:element name="with" type="gh:WithType" minOccurs="0"/>
-      <xs:element name="secrets" type="gh:SecretsType" minOccurs="0"/>
-      <xs:element name="steps" type="gh:StepsType" minOccurs="0"/>
+      <xs:element name="name" type="xs:string" minOccurs="0" />
+      <xs:element name="runs-on" type="gh:RunsOnType" />
+      <xs:element name="needs" type="gh:StringListType" minOccurs="0" />
+      <xs:element name="if" type="xs:string" minOccurs="0" />
+      <xs:element name="permissions" type="gh:PermissionsType" minOccurs="0" />
+      <xs:element name="env" type="gh:EnvironmentType" minOccurs="0" />
+      <xs:element name="defaults" type="gh:DefaultsType" minOccurs="0" />
+      <xs:element name="concurrency" type="gh:ConcurrencyType" minOccurs="0" />
+      <xs:element name="outputs" type="gh:JobOutputsType" minOccurs="0" />
+      <xs:element name="timeout-minutes" type="xs:int" minOccurs="0" />
+      <xs:element name="strategy" type="gh:StrategyType" minOccurs="0" />
+      <xs:element name="continue-on-error" type="xs:boolean" minOccurs="0" />
+      <xs:element name="container" type="gh:ContainerType" minOccurs="0" />
+      <xs:element name="services" type="gh:ServicesType" minOccurs="0" />
+      <xs:element name="uses" type="xs:string" minOccurs="0" />
+      <xs:element name="with" type="gh:WithType" minOccurs="0" />
+      <xs:element name="secrets" type="gh:SecretsType" minOccurs="0" />
+      <xs:element name="steps" type="gh:StepsType" minOccurs="0" />
     </xs:all>
-    <xs:attribute name="id" type="xs:string" use="required"/>
+    <xs:attribute name="id" type="xs:string" use="required" />
   </xs:complexType>
 
   <!-- Runs-on (runner) -->
   <xs:complexType name="RunsOnType">
     <xs:choice>
-      <xs:element name="runner" type="xs:string"/>
-      <xs:element name="matrix" type="gh:StringListType"/>
+      <xs:element name="runner" type="xs:string" />
+      <xs:element name="matrix" type="gh:StringListType" />
     </xs:choice>
   </xs:complexType>
 
   <!-- Strategy (matrix) -->
   <xs:complexType name="StrategyType">
     <xs:all>
-      <xs:element name="matrix" type="gh:MatrixType" minOccurs="0"/>
-      <xs:element name="fail-fast" type="xs:boolean" minOccurs="0"/>
-      <xs:element name="max-parallel" type="xs:int" minOccurs="0"/>
+      <xs:element name="matrix" type="gh:MatrixType" minOccurs="0" />
+      <xs:element name="fail-fast" type="xs:boolean" minOccurs="0" />
+      <xs:element name="max-parallel" type="xs:int" minOccurs="0" />
     </xs:all>
-  </xs:complexType>  <!-- Matrix -->
+  </xs:complexType>
+  
+  <!-- Matrix -->
   <xs:complexType name="MatrixType">
     <xs:choice maxOccurs="unbounded">
-      <xs:element name="include" type="gh:MatrixIncludeType" minOccurs="0" maxOccurs="unbounded"/>
-      <xs:element name="exclude" type="gh:MatrixExcludeType" minOccurs="0" maxOccurs="unbounded"/>
-      
+      <xs:element name="include" type="gh:MatrixIncludeType" minOccurs="0" maxOccurs="unbounded" />
+      <xs:element name="exclude" type="gh:MatrixExcludeType" minOccurs="0" maxOccurs="unbounded" />
+
       <!-- Common matrix dimensions -->
-      <xs:element name="node-version" type="gh:StringListType" minOccurs="0"/>
-      <xs:element name="python-version" type="gh:StringListType" minOccurs="0"/>
-      <xs:element name="java-version" type="gh:StringListType" minOccurs="0"/>
-      <xs:element name="dotnet-version" type="gh:StringListType" minOccurs="0"/>
-      <xs:element name="go-version" type="gh:StringListType" minOccurs="0"/>
-      <xs:element name="ruby-version" type="gh:StringListType" minOccurs="0"/>
-      <xs:element name="os" type="gh:StringListType" minOccurs="0"/>
-      <xs:element name="platform" type="gh:StringListType" minOccurs="0"/>
-      <xs:element name="arch" type="gh:StringListType" minOccurs="0"/>
-      <xs:element name="compiler" type="gh:StringListType" minOccurs="0"/>
-      <xs:element name="configuration" type="gh:StringListType" minOccurs="0"/>
-      <xs:element name="target" type="gh:StringListType" minOccurs="0"/>
-      
-      <!-- Allow any other matrix dimensions in the same namespace -->
-      <xs:any processContents="lax" minOccurs="0" namespace="##targetNamespace"/>
-      
-      <!-- Allow matrix dimensions from other namespaces too -->
-      <xs:any processContents="lax" minOccurs="0" namespace="##other"/>
+      <xs:element name="node-version" type="gh:StringListType" minOccurs="0" />
+      <xs:element name="python-version" type="gh:StringListType" minOccurs="0" />
+      <xs:element name="java-version" type="gh:StringListType" minOccurs="0" />
+      <xs:element name="dotnet-version" type="gh:StringListType" minOccurs="0" />
+      <xs:element name="go-version" type="gh:StringListType" minOccurs="0" />
+      <xs:element name="ruby-version" type="gh:StringListType" minOccurs="0" />
+      <xs:element name="os" type="gh:StringListType" minOccurs="0" />
+      <xs:element name="platform" type="gh:StringListType" minOccurs="0" />
+      <xs:element name="arch" type="gh:StringListType" minOccurs="0" />
+      <xs:element name="compiler" type="gh:StringListType" minOccurs="0" />
+      <xs:element name="configuration" type="gh:StringListType" minOccurs="0" />
+      <xs:element name="target" type="gh:StringListType" minOccurs="0" />
+
+      <!-- Allow matrix dimensions from other namespaces -->
+      <xs:any processContents="lax" minOccurs="0" namespace="##other" />
     </xs:choice>
   </xs:complexType>
 
   <!-- Matrix include/exclude -->
   <xs:complexType name="MatrixIncludeType">
     <xs:sequence>
-      <xs:any processContents="lax" maxOccurs="unbounded"/>
+      <xs:any processContents="lax" maxOccurs="unbounded" />
     </xs:sequence>
   </xs:complexType>
 
   <xs:complexType name="MatrixExcludeType">
     <xs:sequence>
-      <xs:any processContents="lax" maxOccurs="unbounded"/>
+      <xs:any processContents="lax" maxOccurs="unbounded" />
     </xs:sequence>
   </xs:complexType>
 
   <!-- Steps collection -->
   <xs:complexType name="StepsType">
     <xs:sequence>
-      <xs:element name="step" type="gh:StepType" maxOccurs="unbounded"/>
+      <xs:element name="step" type="gh:StepType" maxOccurs="unbounded" />
     </xs:sequence>
   </xs:complexType>
 
   <!-- Individual step -->
   <xs:complexType name="StepType">
     <xs:all>
-      <xs:element name="id" type="xs:string" minOccurs="0"/>
-      <xs:element name="name" type="xs:string" minOccurs="0"/>
-      <xs:element name="if" type="xs:string" minOccurs="0"/>
-      <xs:element name="uses" type="xs:string" minOccurs="0"/>
-      <xs:element name="run" type="xs:string" minOccurs="0"/>
-      <xs:element name="shell" type="xs:string" minOccurs="0"/>
-      <xs:element name="with" type="gh:WithType" minOccurs="0"/>
-      <xs:element name="env" type="gh:EnvironmentType" minOccurs="0"/>
-      <xs:element name="continue-on-error" type="xs:boolean" minOccurs="0"/>
-      <xs:element name="timeout-minutes" type="xs:int" minOccurs="0"/>
-      <xs:element name="working-directory" type="xs:string" minOccurs="0"/>
+      <xs:element name="id" type="xs:string" minOccurs="0" />
+      <xs:element name="name" type="xs:string" minOccurs="0" />
+      <xs:element name="if" type="xs:string" minOccurs="0" />
+      <xs:element name="uses" type="xs:string" minOccurs="0" />
+      <xs:element name="run" type="xs:string" minOccurs="0" />
+      <xs:element name="shell" type="xs:string" minOccurs="0" />
+      <xs:element name="with" type="gh:WithType" minOccurs="0" />
+      <xs:element name="env" type="gh:EnvironmentType" minOccurs="0" />
+      <xs:element name="continue-on-error" type="xs:boolean" minOccurs="0" />
+      <xs:element name="timeout-minutes" type="xs:int" minOccurs="0" />
+      <xs:element name="working-directory" type="xs:string" minOccurs="0" />
     </xs:all>
   </xs:complexType>
 
   <!-- Container -->
   <xs:complexType name="ContainerType">
     <xs:all>
-      <xs:element name="image" type="xs:string"/>
-      <xs:element name="credentials" type="gh:CredentialsType" minOccurs="0"/>
-      <xs:element name="env" type="gh:EnvironmentType" minOccurs="0"/>
-      <xs:element name="ports" type="gh:PortsType" minOccurs="0"/>
-      <xs:element name="volumes" type="gh:VolumesType" minOccurs="0"/>
-      <xs:element name="options" type="xs:string" minOccurs="0"/>
+      <xs:element name="image" type="xs:string" />
+      <xs:element name="credentials" type="gh:CredentialsType" minOccurs="0" />
+      <xs:element name="env" type="gh:EnvironmentType" minOccurs="0" />
+      <xs:element name="ports" type="gh:PortsType" minOccurs="0" />
+      <xs:element name="volumes" type="gh:VolumesType" minOccurs="0" />
+      <xs:element name="options" type="xs:string" minOccurs="0" />
     </xs:all>
   </xs:complexType>
 
   <!-- Services -->
   <xs:complexType name="ServicesType">
     <xs:sequence>
-      <xs:element name="service" type="gh:ServiceType" maxOccurs="unbounded"/>
+      <xs:element name="service" type="gh:ServiceType" maxOccurs="unbounded" />
     </xs:sequence>
   </xs:complexType>
 
   <!-- Individual service -->
   <xs:complexType name="ServiceType">
     <xs:all>
-      <xs:element name="image" type="xs:string"/>
-      <xs:element name="credentials" type="gh:CredentialsType" minOccurs="0"/>
-      <xs:element name="env" type="gh:EnvironmentType" minOccurs="0"/>
-      <xs:element name="ports" type="gh:PortsType" minOccurs="0"/>
-      <xs:element name="volumes" type="gh:VolumesType" minOccurs="0"/>
-      <xs:element name="options" type="xs:string" minOccurs="0"/>
+      <xs:element name="image" type="xs:string" />
+      <xs:element name="credentials" type="gh:CredentialsType" minOccurs="0" />
+      <xs:element name="env" type="gh:EnvironmentType" minOccurs="0" />
+      <xs:element name="ports" type="gh:PortsType" minOccurs="0" />
+      <xs:element name="volumes" type="gh:VolumesType" minOccurs="0" />
+      <xs:element name="options" type="xs:string" minOccurs="0" />
     </xs:all>
-    <xs:attribute name="name" type="xs:string" use="required"/>
+    <xs:attribute name="name" type="xs:string" use="required" />
   </xs:complexType>
 
   <!-- Supporting types -->
@@ -297,7 +296,7 @@
         <xs:complexType>
           <xs:simpleContent>
             <xs:extension base="xs:string">
-              <xs:attribute name="name" type="xs:string" use="required"/>
+              <xs:attribute name="name" type="xs:string" use="required" />
             </xs:extension>
           </xs:simpleContent>
         </xs:complexType>
@@ -311,7 +310,7 @@
         <xs:complexType>
           <xs:simpleContent>
             <xs:extension base="xs:string">
-              <xs:attribute name="name" type="xs:string" use="required"/>
+              <xs:attribute name="name" type="xs:string" use="required" />
             </xs:extension>
           </xs:simpleContent>
         </xs:complexType>
@@ -321,102 +320,102 @@
 
   <xs:complexType name="DefaultsType">
     <xs:all>
-      <xs:element name="run" type="gh:DefaultRunType" minOccurs="0"/>
+      <xs:element name="run" type="gh:DefaultRunType" minOccurs="0" />
     </xs:all>
   </xs:complexType>
 
   <xs:complexType name="DefaultRunType">
     <xs:all>
-      <xs:element name="shell" type="xs:string" minOccurs="0"/>
-      <xs:element name="working-directory" type="xs:string" minOccurs="0"/>
+      <xs:element name="shell" type="xs:string" minOccurs="0" />
+      <xs:element name="working-directory" type="xs:string" minOccurs="0" />
     </xs:all>
   </xs:complexType>
 
   <xs:complexType name="ConcurrencyType">
     <xs:all>
-      <xs:element name="group" type="xs:string"/>
-      <xs:element name="cancel-in-progress" type="xs:boolean" minOccurs="0"/>
+      <xs:element name="group" type="xs:string" />
+      <xs:element name="cancel-in-progress" type="xs:boolean" minOccurs="0" />
     </xs:all>
   </xs:complexType>
 
   <xs:complexType name="PermissionsType">
     <xs:choice maxOccurs="unbounded">
-      <xs:element name="actions" type="gh:PermissionLevelType" minOccurs="0"/>
-      <xs:element name="checks" type="gh:PermissionLevelType" minOccurs="0"/>
-      <xs:element name="contents" type="gh:PermissionLevelType" minOccurs="0"/>
-      <xs:element name="deployments" type="gh:PermissionLevelType" minOccurs="0"/>
-      <xs:element name="id-token" type="gh:PermissionLevelType" minOccurs="0"/>
-      <xs:element name="issues" type="gh:PermissionLevelType" minOccurs="0"/>
-      <xs:element name="discussions" type="gh:PermissionLevelType" minOccurs="0"/>
-      <xs:element name="packages" type="gh:PermissionLevelType" minOccurs="0"/>
-      <xs:element name="pages" type="gh:PermissionLevelType" minOccurs="0"/>
-      <xs:element name="pull-requests" type="gh:PermissionLevelType" minOccurs="0"/>
-      <xs:element name="repository-projects" type="gh:PermissionLevelType" minOccurs="0"/>
-      <xs:element name="security-events" type="gh:PermissionLevelType" minOccurs="0"/>
-      <xs:element name="statuses" type="gh:PermissionLevelType" minOccurs="0"/>
+      <xs:element name="actions" type="gh:PermissionLevelType" minOccurs="0" />
+      <xs:element name="checks" type="gh:PermissionLevelType" minOccurs="0" />
+      <xs:element name="contents" type="gh:PermissionLevelType" minOccurs="0" />
+      <xs:element name="deployments" type="gh:PermissionLevelType" minOccurs="0" />
+      <xs:element name="id-token" type="gh:PermissionLevelType" minOccurs="0" />
+      <xs:element name="issues" type="gh:PermissionLevelType" minOccurs="0" />
+      <xs:element name="discussions" type="gh:PermissionLevelType" minOccurs="0" />
+      <xs:element name="packages" type="gh:PermissionLevelType" minOccurs="0" />
+      <xs:element name="pages" type="gh:PermissionLevelType" minOccurs="0" />
+      <xs:element name="pull-requests" type="gh:PermissionLevelType" minOccurs="0" />
+      <xs:element name="repository-projects" type="gh:PermissionLevelType" minOccurs="0" />
+      <xs:element name="security-events" type="gh:PermissionLevelType" minOccurs="0" />
+      <xs:element name="statuses" type="gh:PermissionLevelType" minOccurs="0" />
     </xs:choice>
   </xs:complexType>
 
   <xs:simpleType name="PermissionLevelType">
     <xs:restriction base="xs:string">
-      <xs:enumeration value="read"/>
-      <xs:enumeration value="write"/>
-      <xs:enumeration value="none"/>
+      <xs:enumeration value="read" />
+      <xs:enumeration value="write" />
+      <xs:enumeration value="none" />
     </xs:restriction>
   </xs:simpleType>
 
   <xs:complexType name="InputsType">
     <xs:sequence>
-      <xs:element name="input" type="gh:InputType" maxOccurs="unbounded"/>
+      <xs:element name="input" type="gh:InputType" maxOccurs="unbounded" />
     </xs:sequence>
   </xs:complexType>
 
   <xs:complexType name="InputType">
     <xs:all>
-      <xs:element name="description" type="xs:string"/>
-      <xs:element name="required" type="xs:boolean" minOccurs="0"/>
-      <xs:element name="default" type="xs:string" minOccurs="0"/>
-      <xs:element name="type" type="gh:InputTypeEnum" minOccurs="0"/>
-      <xs:element name="options" type="gh:StringListType" minOccurs="0"/>
+      <xs:element name="description" type="xs:string" />
+      <xs:element name="required" type="xs:boolean" minOccurs="0" />
+      <xs:element name="default" type="xs:string" minOccurs="0" />
+      <xs:element name="type" type="gh:InputTypeEnum" minOccurs="0" />
+      <xs:element name="options" type="gh:StringListType" minOccurs="0" />
     </xs:all>
-    <xs:attribute name="name" type="xs:string" use="required"/>
+    <xs:attribute name="name" type="xs:string" use="required" />
   </xs:complexType>
 
   <xs:simpleType name="InputTypeEnum">
     <xs:restriction base="xs:string">
-      <xs:enumeration value="boolean"/>
-      <xs:enumeration value="choice"/>
-      <xs:enumeration value="string"/>
-      <xs:enumeration value="environment"/>
+      <xs:enumeration value="boolean" />
+      <xs:enumeration value="choice" />
+      <xs:enumeration value="string" />
+      <xs:enumeration value="environment" />
     </xs:restriction>
   </xs:simpleType>
 
   <xs:complexType name="SecretsType">
     <xs:sequence>
-      <xs:element name="secret" type="gh:SecretType" maxOccurs="unbounded"/>
+      <xs:element name="secret" type="gh:SecretType" maxOccurs="unbounded" />
     </xs:sequence>
   </xs:complexType>
 
   <xs:complexType name="SecretType">
     <xs:all>
-      <xs:element name="description" type="xs:string" minOccurs="0"/>
-      <xs:element name="required" type="xs:boolean" minOccurs="0"/>
+      <xs:element name="description" type="xs:string" minOccurs="0" />
+      <xs:element name="required" type="xs:boolean" minOccurs="0" />
     </xs:all>
-    <xs:attribute name="name" type="xs:string" use="required"/>
+    <xs:attribute name="name" type="xs:string" use="required" />
   </xs:complexType>
 
   <xs:complexType name="OutputsType">
     <xs:sequence>
-      <xs:element name="output" type="gh:OutputType" maxOccurs="unbounded"/>
+      <xs:element name="output" type="gh:OutputType" maxOccurs="unbounded" />
     </xs:sequence>
   </xs:complexType>
 
   <xs:complexType name="OutputType">
     <xs:all>
-      <xs:element name="description" type="xs:string"/>
-      <xs:element name="value" type="xs:string"/>
+      <xs:element name="description" type="xs:string" />
+      <xs:element name="value" type="xs:string" />
     </xs:all>
-    <xs:attribute name="name" type="xs:string" use="required"/>
+    <xs:attribute name="name" type="xs:string" use="required" />
   </xs:complexType>
 
   <xs:complexType name="JobOutputsType">
@@ -425,7 +424,7 @@
         <xs:complexType>
           <xs:simpleContent>
             <xs:extension base="xs:string">
-              <xs:attribute name="name" type="xs:string" use="required"/>
+              <xs:attribute name="name" type="xs:string" use="required" />
             </xs:extension>
           </xs:simpleContent>
         </xs:complexType>
@@ -435,27 +434,27 @@
 
   <xs:complexType name="CredentialsType">
     <xs:all>
-      <xs:element name="username" type="xs:string"/>
-      <xs:element name="password" type="xs:string"/>
+      <xs:element name="username" type="xs:string" />
+      <xs:element name="password" type="xs:string" />
     </xs:all>
   </xs:complexType>
 
   <xs:complexType name="PortsType">
     <xs:sequence>
-      <xs:element name="port" type="xs:string" maxOccurs="unbounded"/>
+      <xs:element name="port" type="xs:string" maxOccurs="unbounded" />
     </xs:sequence>
   </xs:complexType>
 
   <xs:complexType name="VolumesType">
     <xs:sequence>
-      <xs:element name="volume" type="xs:string" maxOccurs="unbounded"/>
+      <xs:element name="volume" type="xs:string" maxOccurs="unbounded" />
     </xs:sequence>
   </xs:complexType>
 
   <!-- String list utility type -->
   <xs:complexType name="StringListType">
     <xs:sequence>
-      <xs:element name="item" type="xs:string" maxOccurs="unbounded"/>
+      <xs:element name="item" type="xs:string" maxOccurs="unbounded" />
     </xs:sequence>
   </xs:complexType>
 

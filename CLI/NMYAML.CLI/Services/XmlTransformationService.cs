@@ -163,11 +163,10 @@ public partial class XmlTransformationService
 		using var xmlWriter = XmlWriter.Create(stringWriter, writerSettings);
 
 		xslt.Transform(xmlReader, xmlWriter);
-
 		var yamlContent = stringWriter.ToString();
 
-		// Clean up YAML output
-		yamlContent = CleanYamlOutput(yamlContent);
+		// TODO: Remove CleanYamlOutput - XSLT should produce clean output directly
+		// yamlContent = CleanYamlOutput(yamlContent);
 
 		return yamlContent;
 	}
@@ -208,11 +207,10 @@ public partial class XmlTransformationService
 		using var xmlWriter = XmlWriter.Create(outputStringWriter, writerSettings);
 
 		xslt.Transform(xmlReader, xmlWriter);
-
 		var yamlContent = outputStringWriter.ToString();
 
-		// Clean up YAML output
-		yamlContent = CleanYamlOutput(yamlContent);
+		// TODO: Remove CleanYamlOutput - XSLT should produce clean output directly
+		// yamlContent = CleanYamlOutput(yamlContent);
 
 		return yamlContent;
 	}
@@ -254,40 +252,14 @@ public partial class XmlTransformationService
 		using var xmlWriter = XmlWriter.Create(stringWriter, writerSettings);
 
 		xslt.Transform(xmlReader, xmlWriter);
-
 		var yamlContent = stringWriter.ToString();
 
-		// Clean up YAML output
-		yamlContent = CleanYamlOutput(yamlContent);
+		// TODO: Remove CleanYamlOutput - XSLT should produce clean output directly
+		// yamlContent = CleanYamlOutput(yamlContent);
 
 		// Write to output file
 		await File.WriteAllTextAsync(outputPath, yamlContent, Encoding.UTF8);
 	}
-
-	private static string CleanYamlOutput(string yamlContent)
-	{
-		// Remove empty lines at the beginning
-		yamlContent = yamlContent.TrimStart('\r', '\n', ' ', '\t');
-
-		// Fix common YAML formatting issues
-		yamlContent = EndOfLineWhiteSpacePattern().Replace(yamlContent, ""); // Remove trailing whitespace
-		yamlContent = ExtraWhiteSpaceNewLinePattern().Replace(yamlContent, "\n\n"); // Normalize multiple empty lines
-
-		// Fix empty values issues that might come from XSLT
-		yamlContent = ColonLineEndingPattern().Replace(yamlContent, ": \"\""); // Empty values
-
-		// Ensure proper line endings
-		yamlContent = yamlContent.Replace("\r\n", "\n").Replace("\r", "\n");
-
-		// Add final newline if missing
-		if (!yamlContent.EndsWith('\n'))
-		{
-			yamlContent += "\n";
-		}
-
-		return yamlContent;
-	}
-
 	private static string GetDefaultXsltPath()
 	{
 		// Try to find XSLT file relative to the executable
@@ -303,11 +275,4 @@ public partial class XmlTransformationService
 		return candidates.FirstOrDefault(File.Exists)
 			   ?? throw new FileNotFoundException("Default XSLT transform file not found. Please specify --xslt-path.");
 	}
-
-	[GeneratedRegex(@"\s+$", RegexOptions.Multiline)]
-	private static partial Regex EndOfLineWhiteSpacePattern();
-	[GeneratedRegex(@"\n\s*\n\s*\n+")]
-	private static partial Regex ExtraWhiteSpaceNewLinePattern();
-	[GeneratedRegex(@":\s*$", RegexOptions.Multiline)]
-	private static partial Regex ColonLineEndingPattern();
 }
