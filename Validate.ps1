@@ -17,9 +17,6 @@
     Optional path to XSD schema file for XML validation. Only applicable to XML files.
     If not specified for XML files, only syntax validation is performed.
 
-.PARAMETER Detailed
-    Show detailed validation results including line numbers and specific error messages.
-
 .PARAMETER VerboseOutput
     Enable verbose output showing validation steps.
 
@@ -42,9 +39,9 @@
     Validates YAML syntax and structure (auto-detected as YAML file).
 
 .EXAMPLE
-    .\Validate.ps1 "output\dotnet-library-workflow.yml" -Detailed -VerboseOutput
+    .\Validate.ps1 "output\dotnet-library-workflow.yml" -VerboseOutput
     
-    Validates YAML with detailed output and verbose logging.
+    Validates YAML with verbose logging.
 
 .NOTES
     This script requires the NMYAML CLI tool to be built.
@@ -59,9 +56,6 @@ param(
     
     [Parameter(Mandatory = $false)]
     [string]$Schema,
-    
-    [Parameter(Mandatory = $false)]
-    [switch]$Detailed,
     
     [Parameter(Mandatory = $false)]
     [switch]$VerboseOutput,
@@ -109,7 +103,7 @@ if ($Schema -and $isXmlFile) {
 }
 
 # Add common optional parameters
-if ($Detailed) { $validationArgs += "--detailed" }
+$validationArgs += "--detailed"  # Always use detailed output
 if ($VerboseOutput) { $validationArgs += "--verbose" }
 if ($NoColor) { $validationArgs += "--no-color" }
 
