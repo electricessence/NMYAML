@@ -6,6 +6,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NMYAML.CLI", "CLI\NMYAML.CL
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NMYAML.CLI.Tests", "CLI\NMYAML.CLI.Tests\NMYAML.CLI.Tests.csproj", "{F826E9C0-889B-49A5-700B-A2DC9D723D75}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NMYAML.Core", "Core\NMYAML.Core\NMYAML.Core.csproj", "{15678FD5-8F17-15F3-5DF7-4B4E38835782}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -20,6 +22,10 @@ Global
 		{F826E9C0-889B-49A5-700B-A2DC9D723D75}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F826E9C0-889B-49A5-700B-A2DC9D723D75}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F826E9C0-889B-49A5-700B-A2DC9D723D75}.Release|Any CPU.Build.0 = Release|Any CPU
+		{15678FD5-8F17-15F3-5DF7-4B4E38835782}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{15678FD5-8F17-15F3-5DF7-4B4E38835782}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{15678FD5-8F17-15F3-5DF7-4B4E38835782}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{15678FD5-8F17-15F3-5DF7-4B4E38835782}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

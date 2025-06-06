@@ -28,4 +28,8 @@
     <None Include="..\..\xslt\*.xslt" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\..\Core\NMYAML.Core\NMYAML.Core.csproj" />
+  </ItemGroup>
+
 </Project>
