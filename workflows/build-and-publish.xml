@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gh:workflow
+    xmlns:gh="http://github.com/actions/1.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://github.com/actions/1.0 ../schemas/github-actions-schema.xsd">
+
+    <gh:name>Build and Publish NMYAML</gh:name>
+
+    <gh:on>
+        <gh:push>
+            <gh:branches>
+                <gh:item>main</gh:item>
+                <gh:item>develop</gh:item>
+            </gh:branches>
+        </gh:push>
+        <gh:pull_request>
+            <gh:branches>
+                <gh:item>main</gh:item>
+            </gh:branches>
+        </gh:pull_request>
+        <gh:release>
+            <gh:types>
+                <gh:item>published</gh:item>
+            </gh:types>
+        </gh:release>
+    </gh:on>
+    <gh:env>
+        <gh:var name="DOTNET_VERSION">9.0.x</gh:var>
+        <gh:var name="NUGET_AUTH_TOKEN">${{ secrets.NUGET_API_KEY }}</gh:var>
+    </gh:env>
+    <gh:jobs>
+        <gh:job id="build">
+            <gh:name>Build and Test</gh:name>
+            <gh:runs-on>
+                <gh:runner>ubuntu-latest</gh:runner>
+            </gh:runs-on>
+
+            <gh:steps>
+                <gh:step>
+                    <gh:name>Checkout code</gh:name>
+                    <gh:uses>actions/checkout@v4</gh:uses>
+                    <gh:with>
+                        <gh:param name="fetch-depth">0</gh:param>
+                    </gh:with>
+                </gh:step>
+
+                <gh:step>
+                    <gh:name>Setup .NET</gh:name>
+                    <gh:uses>actions/setup-dotnet@v4</gh:uses>
+                    <gh:with>
+                        <gh:param name="dotnet-version">${{ env.DOTNET_VERSION }}</gh:param>
+                    </gh:with>
+                </gh:step>
+
+                <gh:step>
+                    <gh:name>Restore dependencies</gh:name>
+                    <gh:run>dotnet restore</gh:run>
+                </gh:step>
+
+                <gh:step>
+                    <gh:name>Build solution</gh:name>
+                    <gh:run>dotnet build --configuration Release --no-restore</gh:run>
+                </gh:step>
+
+                <gh:step>
+                    <gh:name>Run tests</gh:name>
+                    <gh:run>dotnet test --configuration Release --no-build --verbosity normal</gh:run>
+                </gh:step>
+
+                <gh:step>
+                    <gh:name>Test CLI tool</gh:name>
+                    <gh:run>cd CLI/NMYAML.CLI
+dotnet run -- --help
+dotnet run -- transform "../../samples/github-workflow.xml" "test-workflow.yml" --xslt "../../xslt/xml-to-yaml.xslt"
+cat test-workflow.yml</gh:run>
+                </gh:step>
+            </gh:steps>
+        </gh:job>
+
+        <gh:job id="pack">
+            <gh:name>Pack NuGet Package</gh:name>
+            <gh:runs-on>
+                <gh:runner>ubuntu-latest</gh:runner>
+            </gh:runs-on>
+            <gh:needs>
+                <gh:item>build</gh:item>
+            </gh:needs>
+
+            <gh:steps>
+                <gh:step>
+                    <gh:name>Checkout code</gh:name>
+                    <gh:uses>actions/checkout@v4</gh:uses>
+                    <gh:with>
+                        <gh:param name="fetch-depth">0</gh:param>
+                    </gh:with>
+                </gh:step>
+
+                <gh:step>
+                    <gh:name>Setup .NET</gh:name>
+                    <gh:uses>actions/setup-dotnet@v4</gh:uses>
+                    <gh:with>
+                        <gh:param name="dotnet-version">${{ env.DOTNET_VERSION }}</gh:param>
+                    </gh:with>
+                </gh:step>
+
+                <gh:step>
+                    <gh:name>Restore dependencies</gh:name>
+                    <gh:run>dotnet restore</gh:run>
+                </gh:step>
+
+                <gh:step>
+                    <gh:name>Pack Core library</gh:name>
+                    <gh:run>dotnet pack Core/NMYAML.Core/NMYAML.Core.csproj --configuration Release --no-restore</gh:run>
+                </gh:step>
+
+                <gh:step>
+                    <gh:name>Upload NuGet package artifacts</gh:name>
+                    <gh:uses>actions/upload-artifact@v4</gh:uses>
+                    <gh:with>
+                        <gh:param name="name">nuget-packages</gh:param>
+                        <gh:param name="path">Core/NMYAML.Core/bin/Release/*.nupkg</gh:param>
+                    </gh:with>
+                </gh:step>
+            </gh:steps>
+        </gh:job>
+
+        <gh:job id="publish">
+            <gh:name>Publish to NuGet</gh:name>
+            <gh:runs-on>
+                <gh:runner>ubuntu-latest</gh:runner>
+            </gh:runs-on>
+            <gh:needs>
+                <gh:item>pack</gh:item>
+            </gh:needs>
+            <gh:if>${{ github.event_name == 'release' }}</gh:if>
+
+            <gh:steps>
+                <gh:step>
+                    <gh:name>Checkout code</gh:name>
+                    <gh:uses>actions/checkout@v4</gh:uses>
+                </gh:step>
+
+                <gh:step>
+                    <gh:name>Setup .NET</gh:name>
+                    <gh:uses>actions/setup-dotnet@v4</gh:uses>
+                    <gh:with>
+                        <gh:param name="dotnet-version">${{ env.DOTNET_VERSION }}</gh:param>
+                    </gh:with>
+                </gh:step>
+
+                <gh:step>
+                    <gh:name>Download NuGet package artifacts</gh:name>
+                    <gh:uses>actions/download-artifact@v4</gh:uses>
+                    <gh:with>
+                        <gh:param name="name">nuget-packages</gh:param>
+                        <gh:param name="path">./packages</gh:param>
+                    </gh:with>
+                </gh:step>
+
+                <gh:step>
+                    <gh:name>Publish to NuGet</gh:name>
+                    <gh:run>dotnet nuget push ./packages/*.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate</gh:run>
+                </gh:step>
+            </gh:steps>
+        </gh:job>
+
+        <gh:job id="demo">
+            <gh:name>Demonstrate NMYAML Usage</gh:name>
+            <gh:runs-on>
+                <gh:runner>ubuntu-latest</gh:runner>
+            </gh:runs-on>
+            <gh:needs>
+                <gh:item>build</gh:item>
+            </gh:needs>
+
+            <gh:steps>
+                <gh:step>
+                    <gh:name>Checkout code</gh:name>
+                    <gh:uses>actions/checkout@v4</gh:uses>
+                </gh:step>
+
+                <gh:step>
+                    <gh:name>Setup .NET</gh:name>
+                    <gh:uses>actions/setup-dotnet@v4</gh:uses>
+                    <gh:with>
+                        <gh:param name="dotnet-version">${{ env.DOTNET_VERSION }}</gh:param>
+                    </gh:with>
+                </gh:step>
+
+                <gh:step>
+                    <gh:name>Build CLI tool</gh:name>
+                    <gh:run>dotnet build CLI/NMYAML.CLI --configuration Release</gh:run>
+                </gh:step>
+
+                <gh:step>
+                    <gh:name>Transform this workflow XML to YAML</gh:name>
+                    <gh:run>cd CLI/NMYAML.CLI
+dotnet run --configuration Release -- transform "../../workflows/build-and-publish.xml" "../../.github/workflows/build-and-publish.yml" --xslt "../../xslt/xml-to-yaml.xslt"
+echo "Generated YAML workflow:"
+cat "../../.github/workflows/build-and-publish.yml"</gh:run>
+                </gh:step>
+
+                <gh:step>
+                    <gh:name>Validate generated workflow</gh:name>
+                    <gh:run>cd CLI/NMYAML.CLI
+dotnet run --configuration Release -- validate "../../.github/workflows/build-and-publish.yml"</gh:run>
+                </gh:step>
+
+                <gh:step>
+                    <gh:name>Upload generated workflow</gh:name>
+                    <gh:uses>actions/upload-artifact@v4</gh:uses>
+                    <gh:with>
+                        <gh:param name="name">generated-workflow</gh:param>
+                        <gh:param name="path">.github/workflows/build-and-publish.yml</gh:param>
+                    </gh:with>
+                </gh:step>
+            </gh:steps>
+        </gh:job>
+    </gh:jobs>
+</gh:workflow>

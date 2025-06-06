@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gh:workflow xmlns:gh="http://github.com/actions/1.0" 
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://github.com/actions/1.0 ../schemas/github-actions-schema.xsd">
+
+  <gh:name>Simple Build Test</gh:name>
+  
+  <gh:on>
+    <gh:push>
+      <gh:branches>
+        <gh:item>main</gh:item>
+      </gh:branches>
+    </gh:push>
+  </gh:on>
+
+  <gh:jobs>
+    <gh:build>
+      <gh:name>Build</gh:name>
+      <gh:runs-on>ubuntu-latest</gh:runs-on>
+      
+      <gh:steps>
+        <gh:step>
+          <gh:name>Checkout</gh:name>
+          <gh:uses>actions/checkout@v4</gh:uses>
+        </gh:step>
+
+        <gh:step>
+          <gh:name>Setup .NET</gh:name>
+          <gh:uses>actions/setup-dotnet@v4</gh:uses>
+          <gh:with>
+            <gh:dotnet-version>9.0.x</gh:dotnet-version>
+          </gh:with>
+        </gh:step>
+
+        <gh:step>
+          <gh:name>Build</gh:name>
+          <gh:run>dotnet build</gh:run>
+        </gh:step>
+      </gh:steps>
+    </gh:build>
+  </gh:jobs>
+</gh:workflow>
