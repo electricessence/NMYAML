@@ -11,16 +11,16 @@
     <xsl:if test="gh:name">
       <xsl:text>name: </xsl:text>
       <xsl:call-template name="quote-if-needed">
-        <xsl:with-param name="text" select="gh:name"/>
+        <xsl:with-param name="text" select="gh:name" />
       </xsl:call-template>
       <xsl:text>&#10;&#10;</xsl:text>
     </xsl:if>
-    
+
     <!-- Run name -->
     <xsl:if test="gh:run-name">
       <xsl:text>run-name: </xsl:text>
       <xsl:call-template name="quote-if-needed">
-        <xsl:with-param name="text" select="gh:run-name"/>
+        <xsl:with-param name="text" select="gh:run-name" />
       </xsl:call-template>
       <xsl:text>&#10;&#10;</xsl:text>
     </xsl:if>
@@ -437,10 +437,21 @@
         <xsl:with-param name="level" select="$indent" />
       </xsl:call-template>
       <xsl:text>if: </xsl:text>
-      <xsl:call-template name="quote-if-needed">
-        <xsl:with-param name="text" select="gh:if" />
-      </xsl:call-template>
-      <xsl:text>&#10;</xsl:text>
+      <xsl:choose>
+        <xsl:when test="contains(gh:if, '&#10;') or contains(gh:if, '|')">
+          <xsl:text>|&#10;</xsl:text>
+          <xsl:call-template name="multiline-text">
+            <xsl:with-param name="text" select="gh:if" />
+            <xsl:with-param name="indent" select="$indent + 1" />
+          </xsl:call-template>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:call-template name="quote-if-needed">
+            <xsl:with-param name="text" select="gh:if" />
+          </xsl:call-template>
+          <xsl:text>&#10;</xsl:text>
+        </xsl:otherwise>
+      </xsl:choose>
     </xsl:if>
 
     <!-- Strategy -->
@@ -622,18 +633,27 @@
       <xsl:apply-templates select="gh:env">
         <xsl:with-param name="indent" select="$indent + 1" />
       </xsl:apply-templates>
-    </xsl:if>
-
-    <!-- If condition -->
+    </xsl:if>    <!-- If condition -->
     <xsl:if test="gh:if">
       <xsl:call-template name="indent">
         <xsl:with-param name="level" select="$indent" />
       </xsl:call-template>
       <xsl:text>if: </xsl:text>
-      <xsl:call-template name="quote-if-needed">
-        <xsl:with-param name="text" select="gh:if" />
-      </xsl:call-template>
-      <xsl:text>&#10;</xsl:text>
+      <xsl:choose>
+        <xsl:when test="contains(gh:if, '&#10;') or contains(gh:if, '|')">
+          <xsl:text>|&#10;</xsl:text>
+          <xsl:call-template name="multiline-text">
+            <xsl:with-param name="text" select="gh:if" />
+            <xsl:with-param name="indent" select="$indent + 1" />
+          </xsl:call-template>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:call-template name="quote-if-needed">
+            <xsl:with-param name="text" select="gh:if" />
+          </xsl:call-template>
+          <xsl:text>&#10;</xsl:text>
+        </xsl:otherwise>
+      </xsl:choose>
     </xsl:if>
   </xsl:template>
 
@@ -681,7 +701,8 @@
 
   <xsl:template name="quote-if-needed">
     <xsl:param name="text" />
-    <xsl:choose>      <xsl:when
+    <xsl:choose>
+      <xsl:when
         test="contains($text, ' ') or contains($text, ':') or contains($text, '#') or contains($text, &quot;'&quot;) or contains($text, '&quot;') or starts-with($text, '-') or starts-with($text, '[') or starts-with($text, '{') or starts-with($text, '$') or starts-with($text, '*')">
         <xsl:text>"</xsl:text>
         <xsl:call-template name="escape-string">
