@@ -1,7 +1,7 @@
-using NMYAML.CLI.Models;
-using NMYAML.CLI.Validators;
+using NMYAML.Core.Models;
+using NMYAML.Core.Validators;
 
-namespace NMYAML.CLI.Services;
+namespace NMYAML.Core.Services;
 
 public partial class XmlTransformationService
 {
@@ -11,8 +11,6 @@ public partial class XmlTransformationService
 
 		try
 		{
-			AnsiConsole.MarkupLine("[cyan]Starting XML to YAML transformation...[/]");
-
 			// Validate input files
 			if (!File.Exists(options.InputPath))
 			{
@@ -37,13 +35,12 @@ public partial class XmlTransformationService
 					ErrorMessage: $"XSLT transform file not found: {xsltPath}",
 					Duration: DateTime.UtcNow - startTime
 				);
-			}            // Step 1: XML Validation (optional)
+			}
 
+			// Step 1: XML Validation (optional)
 			ValidationSummary? xmlValidation = null;
 			if (!options.SkipXmlValidation && !string.IsNullOrEmpty(options.XsdSchemaPath))
 			{
-				AnsiConsole.MarkupLine("[yellow]Step 1: Validating XML against schema...[/]");
-
 				var xmlValidationStart = DateTime.UtcNow;
 				var xmlResults = new List<ValidationResult>();
 
@@ -56,12 +53,6 @@ public partial class XmlTransformationService
 
 				if (!xmlValidation.IsValid)
 				{
-					AnsiConsole.MarkupLine("[red]XML validation failed![/]");
-					if (options.DetailedOutput)
-					{
-						// TODO: Display Validation Summary.
-					}
-
 					return new TransformationResult(
 						Success: false,
 						OutputPath: null,
@@ -71,18 +62,15 @@ public partial class XmlTransformationService
 						Duration: DateTime.UtcNow - startTime
 					);
 				}
-
-				AnsiConsole.MarkupLine("[green]✓ XML validation passed[/]");
 			}
 
 			// Step 2: XSLT Transformation
-			AnsiConsole.MarkupLine("[yellow]Step 2: Transforming XML to YAML...[/]");
 			await PerformTransformation(options.InputPath, xsltPath, options.OutputPath);
-			AnsiConsole.MarkupLine("[green]✓ Transformation completed[/]");            // Step 3: YAML Validation (optional)
+
+			// Step 3: YAML Validation (optional)
 			ValidationSummary? yamlValidation = null;
 			if (!options.SkipYamlValidation && File.Exists(options.OutputPath))
 			{
-				AnsiConsole.MarkupLine("[yellow]Step 3: Validating generated YAML...[/]");
 				var yamlValidationStart = DateTime.UtcNow;
 				var yamlResults = new List<ValidationResult>();
 
@@ -92,23 +80,9 @@ public partial class XmlTransformationService
 				}
 
 				yamlValidation = ValidationSummary.FromResults(yamlResults, DateTime.UtcNow - yamlValidationStart);
-
-				if (options.DetailedOutput)
-				{
-					// TODO: Display YAML Validation Summary.
-				}
-				else if (yamlValidation.Errors > 0)
-				{
-					AnsiConsole.MarkupLine($"[yellow]⚠ YAML validation found {yamlValidation.Errors} errors and {yamlValidation.Warnings} warnings[/]");
-				}
-				else
-				{
-					AnsiConsole.MarkupLine("[green]✓ YAML validation passed[/]");
-				}
 			}
 
 			var duration = DateTime.UtcNow - startTime;
-			AnsiConsole.MarkupLine($"[green]✓ Conversion completed successfully in {duration.TotalMilliseconds:F0}ms[/]");
 
 			return new TransformationResult(
 				Success: true,
@@ -131,9 +105,11 @@ public partial class XmlTransformationService
 				Duration: duration
 			);
 		}
-	}    /// <summary>
-		 /// Simple transformation method that returns YAML content as string
-		 /// </summary>
+	}
+
+	/// <summary>
+	/// Simple transformation method that returns YAML content as string
+	/// </summary>
 	public static string TransformAsync(string xmlPath, string xsltPath)
 	{
 		// Create XSL transform
@@ -164,9 +140,6 @@ public partial class XmlTransformationService
 
 		xslt.Transform(xmlReader, xmlWriter);
 		var yamlContent = stringWriter.ToString();
-
-		// TODO: Remove CleanYamlOutput - XSLT should produce clean output directly
-		// yamlContent = CleanYamlOutput(yamlContent);
 
 		return yamlContent;
 	}
@@ -208,9 +181,6 @@ public partial class XmlTransformationService
 
 		xslt.Transform(xmlReader, xmlWriter);
 		var yamlContent = outputStringWriter.ToString();
-
-		// TODO: Remove CleanYamlOutput - XSLT should produce clean output directly
-		// yamlContent = CleanYamlOutput(yamlContent);
 
 		return yamlContent;
 	}
@@ -254,12 +224,10 @@ public partial class XmlTransformationService
 		xslt.Transform(xmlReader, xmlWriter);
 		var yamlContent = stringWriter.ToString();
 
-		// TODO: Remove CleanYamlOutput - XSLT should produce clean output directly
-		// yamlContent = CleanYamlOutput(yamlContent);
-
 		// Write to output file
 		await File.WriteAllTextAsync(outputPath, yamlContent, Encoding.UTF8);
 	}
+
 	private static string GetDefaultXsltPath()
 	{
 		// Try to find XSLT file relative to the executable

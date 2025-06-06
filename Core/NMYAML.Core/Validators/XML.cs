@@ -1,8 +1,8 @@
-using NMYAML.CLI.Models;
+using NMYAML.Core.Models;
 using System.Xml.Schema;
-using static NMYAML.CLI.Validators.FilePath;
+using static NMYAML.Core.Validators.FilePath;
 
-namespace NMYAML.CLI.Validators;
+namespace NMYAML.Core.Validators;
 
 /// <summary>
 /// Static class providing XML validation methods

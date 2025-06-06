@@ -1,7 +1,7 @@
-using NMYAML.CLI.Models;
-using NMYAML.CLI.Services;
+using NMYAML.Core.Models;
+using NMYAML.Core.Services;
 using NMYAML.CLI.Utilities;
-using NMYAML.CLI.Validators;
+using NMYAML.Core.Validators;
 using Spectre.Console.Cli;
 using System.ComponentModel;
 using System.Diagnostics;

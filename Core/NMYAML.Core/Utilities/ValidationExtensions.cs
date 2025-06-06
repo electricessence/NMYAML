@@ -1,6 +1,6 @@
-using NMYAML.CLI.Models;
+using NMYAML.Core.Models;
 
-namespace NMYAML.CLI.Utilities;
+namespace NMYAML.Core.Utilities;
 
 public static class ValidationExtensions
 {

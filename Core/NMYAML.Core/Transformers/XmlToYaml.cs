@@ -1,4 +1,4 @@
-namespace NMYAML.CLI.Transformers;
+namespace NMYAML.Core.Transformers;
 
 /// <summary>
 /// Static class for transforming XML to YAML

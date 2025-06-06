@@ -1,7 +1,7 @@
 using System.Collections.Frozen;
 using System.Collections.Immutable;
 
-namespace NMYAML.CLI.Models;
+namespace NMYAML.Core.Models;
 
 public static class GitHubActionsSchema
 {

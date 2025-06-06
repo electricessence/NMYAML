@@ -1,3 +1,3 @@
-﻿global using NMYAML.CLI.Models;
-global using NMYAML.CLI.Validators;
+﻿global using NMYAML.Core.Models;
+global using NMYAML.Core.Validators;
 global using Open.Disposable;

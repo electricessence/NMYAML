@@ -22,9 +22,9 @@
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
   </ItemGroup>
-
   <ItemGroup>
     <ProjectReference Include="..\NMYAML.CLI\NMYAML.CLI.csproj" />
+    <ProjectReference Include="..\..\Core\NMYAML.Core\NMYAML.Core.csproj" />
   </ItemGroup>
 
   <ItemGroup>

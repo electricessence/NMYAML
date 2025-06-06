@@ -1,9 +1,9 @@
-using NMYAML.CLI.Models;
+using NMYAML.Core.Models;
 using YamlDotNet.Core;
 using YamlDotNet.Serialization;
-using static NMYAML.CLI.Validators.FilePath;
+using static NMYAML.Core.Validators.FilePath;
 
-namespace NMYAML.CLI.Validators;
+namespace NMYAML.Core.Validators;
 
 /// <summary>
 /// Static class providing YAML validation methods

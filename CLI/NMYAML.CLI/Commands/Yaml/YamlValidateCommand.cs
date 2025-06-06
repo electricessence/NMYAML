@@ -1,6 +1,6 @@
-using NMYAML.CLI.Models;
+using NMYAML.Core.Models;
 using NMYAML.CLI.Utilities;
-using NMYAML.CLI.Validators;
+using NMYAML.Core.Validators;
 using Spectre.Console.Cli;
 using System.ComponentModel;
 using System.Diagnostics;

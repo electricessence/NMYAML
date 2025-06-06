@@ -1,4 +1,4 @@
-namespace NMYAML.CLI.Models;
+namespace NMYAML.Core.Models;
 
 public enum ValidationSeverity
 {

@@ -1,7 +1,7 @@
-﻿using NMYAML.CLI.Models;
+﻿using NMYAML.Core.Models;
 using System.Diagnostics;
 
-namespace NMYAML.CLI.Validators;
+namespace NMYAML.Core.Validators;
 
 public static class FilePath
 {

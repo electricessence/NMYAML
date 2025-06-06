@@ -1,5 +1,5 @@
-using NMYAML.CLI.Models;
-using NMYAML.CLI.Services;
+using NMYAML.Core.Models;
+using NMYAML.Core.Services;
 using NMYAML.CLI.Utilities;
 using Spectre.Console.Cli;
 using System.ComponentModel;
