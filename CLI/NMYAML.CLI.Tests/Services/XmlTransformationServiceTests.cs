@@ -13,9 +13,8 @@ public class XmlTransformationTests : DisposableBase
 		_tempDir = Path.Combine(Path.GetTempPath(), $"XmlTransformationTests_{Guid.NewGuid()}");
 		Directory.CreateDirectory(_tempDir);
 
-		// Create a sample XSLT file for testing
-		_xsltPath = Path.Combine(_tempDir, "test-transform.xslt");
-		File.WriteAllText(_xsltPath, GetSampleXslt());
+		// Use the real XSLT file from the project
+		_xsltPath = GetXsltFilePath();
 	}
 
 	[Fact]
@@ -90,7 +89,48 @@ public class XmlTransformationTests : DisposableBase
 		Assert.Throws<XmlException>(() => XmlToYaml.TransformContent(invalidXml, _xsltPath));
 	}
 
-	private static string GetSampleXslt()
+	protected override void OnDispose()
+	{
+		if (Directory.Exists(_tempDir))
+		{
+			Directory.Delete(_tempDir, true);
+		}
+	}
+
+	/// <summary>
+	/// Gets the path to the actual XSLT file in the project
+	/// </summary>
+	public static string GetXsltFilePath()
+	{
+		// Try to find the XSLT file in various locations relative to the test execution directory
+		var rootDir = AppDomain.CurrentDomain.BaseDirectory;
+
+		var possiblePaths = new[]
+		{
+			Path.Combine(rootDir, "xslt", "xml-to-yaml.xslt"),
+			Path.Combine(rootDir, "..", "..", "..", "..", "..", "xslt", "xml-to-yaml.xslt"),
+			Path.Combine(rootDir, "..", "..", "..", "..", "..", "..", "xslt", "xml-to-yaml.xslt"),
+			Path.GetFullPath(Path.Combine(rootDir, "..", "..", "..", "..", "..", "xslt", "xml-to-yaml.xslt"))
+		};
+
+		foreach (var path in possiblePaths)
+		{
+			if (File.Exists(path))
+			{
+				return path;
+			}
+		}
+
+		// If the actual file isn't found, create a custom XSLT for testing
+		var tempPath = Path.Combine(Path.GetTempPath(), $"test-transform-{Guid.NewGuid()}.xslt");
+		File.WriteAllText(tempPath, GetSimplifiedXslt());
+		return tempPath;
+	}
+
+	/// <summary>
+	/// Returns a simplified XSLT to use only if the real one can't be found
+	/// </summary>
+	public static string GetSimplifiedXslt()
 	{
 		return """
             <?xml version="1.0" encoding="UTF-8"?>
@@ -159,13 +199,5 @@ public class XmlTransformationTests : DisposableBase
               </xsl:template>
             </xsl:stylesheet>
             """;
-	}
-
-	protected override void OnDispose()
-	{
-		if (Directory.Exists(_tempDir))
-		{
-			Directory.Delete(_tempDir, true);
-		}
 	}
 }
