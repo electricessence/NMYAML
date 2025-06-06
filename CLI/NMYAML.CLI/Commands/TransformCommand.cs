@@ -10,17 +10,13 @@ namespace NMYAML.CLI.Commands;
 [Description("Transform XML to YAML using XSLT")]
 public class TransformCommand : AsyncCommand<TransformSettings>
 {
-	private readonly XmlValidationService _xmlValidator;
 	private readonly XmlTransformationService _transformer;
-	private readonly YamlValidationService _yamlValidator;
 	private readonly ValidationResultsDisplay _resultsDisplay;
 
 	public TransformCommand()
 	{
 		var console = AnsiConsole.Console;
-		_xmlValidator = XmlValidationService.Instance;
 		_transformer = new XmlTransformationService();
-		_yamlValidator = new YamlValidationService(console);
 		_resultsDisplay = new ValidationResultsDisplay(console);
 	}
 
@@ -74,7 +70,7 @@ public class TransformCommand : AsyncCommand<TransformSettings>
 				{
 					var xmlValidationStart = Stopwatch.StartNew();
 
-					await foreach (var result in _xmlValidator.ValidateAsync(settings.InputPath, xsdPath))
+					await foreach (var result in XmlValidationService.Instance.ValidateAsync(settings.InputPath, xsdPath))
 					{
 						xmlValidationResults.Add(result);
 						if (settings.Verbose)
@@ -137,7 +133,7 @@ public class TransformCommand : AsyncCommand<TransformSettings>
 				{
 					var yamlValidationStart = Stopwatch.StartNew();
 
-					await foreach (var result in _yamlValidator.ValidateAsync(settings.OutputPath, true))
+					await foreach (var result in YamlValidationService.Instance.ValidateAsync(settings.OutputPath))
 					{
 						yamlValidationResults.Add(result);
 						if (settings.Verbose)

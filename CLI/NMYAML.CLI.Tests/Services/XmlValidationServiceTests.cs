@@ -1,8 +1,9 @@
 using NMYAML.CLI.Models;
+using Open.Disposable;
 
 namespace NMYAML.CLI.Services.Tests;
 
-public class XmlValidationServiceTests
+public class XmlValidationServiceTests : DisposableBase
 {
 	private readonly string _tempDir;
 
@@ -242,7 +243,7 @@ public class XmlValidationServiceTests
 		return xsdPath;
 	}
 
-	public void Dispose()
+	protected override void OnDispose()
 	{
 		if (Directory.Exists(_tempDir))
 		{

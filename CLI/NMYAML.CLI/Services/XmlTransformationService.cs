@@ -4,7 +4,7 @@ namespace NMYAML.CLI.Services;
 
 public partial class XmlTransformationService
 {
-	public async Task<TransformationResult> TransformAsync(ConversionOptions options)
+	public static async Task<TransformationResult> TransformAsync(ConversionOptions options)
 	{
 		var startTime = DateTime.UtcNow;
 

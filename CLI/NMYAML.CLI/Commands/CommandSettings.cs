@@ -46,10 +46,6 @@ public class ValidateSettings : BaseSettings
 	[CommandOption("-d|--detailed")]
 	[Description("Show detailed validation results")]
 	public bool Detailed { get; set; }
-
-	[CommandOption("--github-actions")]
-	[Description("Enable GitHub Actions specific validation")]
-	public bool GitHubActions { get; set; }
 }
 
 public class ConvertSettings : BaseSettings

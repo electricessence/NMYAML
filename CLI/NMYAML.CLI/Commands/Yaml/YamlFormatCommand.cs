@@ -1,5 +1,6 @@
 using Spectre.Console.Cli;
 using System.ComponentModel;
+using System.Diagnostics;
 using YamlDotNet.Core;
 using YamlDotNet.Serialization;
 
@@ -37,7 +38,7 @@ public class YamlFormatCommand : AsyncCommand<YamlFormatSettings>
 
 			// Read and parse YAML
 			var yamlContent = await File.ReadAllTextAsync(settings.YamlPath);
-			string formattedYaml;
+			string? formattedYaml = null;
 
 			await AnsiConsole.Status()
 				.StartAsync("Formatting YAML...", async ctx =>
@@ -71,6 +72,7 @@ public class YamlFormatCommand : AsyncCommand<YamlFormatSettings>
 					await Task.CompletedTask;
 				});
 
+			Debug.Assert(formattedYaml is not null);
 			// Show differences if dry run
 			if (settings.DryRun)
 			{

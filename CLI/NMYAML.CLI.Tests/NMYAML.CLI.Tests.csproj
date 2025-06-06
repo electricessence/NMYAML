@@ -24,11 +24,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Using Include="Xunit" />
+    <ProjectReference Include="..\NMYAML.CLI\NMYAML.CLI.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\NMYAML.CLI\NMYAML.CLI.csproj" />
+    <Using Include="Xunit" />
   </ItemGroup>
 
 </Project>

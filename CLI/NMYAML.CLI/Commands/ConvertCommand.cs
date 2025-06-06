@@ -62,7 +62,7 @@ public class ConvertCommand : AsyncCommand<ConvertSettings>
 			}
 
 			// Perform full transformation with validation
-			var result = await _transformationService.TransformAsync(options);
+			var result = await XmlTransformationService.TransformAsync(options);
 
 			if (result.Success)
 			{

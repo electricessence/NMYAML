@@ -55,7 +55,7 @@ public class YamlValidateCommand : AsyncCommand<YamlValidateSettings>
 			await AnsiConsole.Status()
 				.StartAsync("Validating YAML file...", async ctx =>
 				{
-					await foreach (var result in YamlValidationService.Instance.ValidateAsync(settings.YamlPath, settings.GitHubActions))
+					await foreach (var result in YamlValidationService.Instance.ValidateAsync(settings.YamlPath))
 					{
 						results.Add(result);
 						if (settings.Verbose)

@@ -10,15 +10,11 @@ namespace NMYAML.CLI.Commands;
 [Description("Validate XML or YAML files")]
 public class ValidateCommand : AsyncCommand<ValidateSettings>
 {
-	private readonly XmlValidationService _xmlValidator;
-	private readonly YamlValidationService _yamlValidator;
 	private readonly ValidationResultsDisplay _resultsDisplay;
 
 	public ValidateCommand()
 	{
 		var console = AnsiConsole.Console;
-		_xmlValidator = XmlValidationService.Instance;
-		_yamlValidator = new YamlValidationService(console);
 		_resultsDisplay = new ValidationResultsDisplay(console);
 	}
 
@@ -58,7 +54,7 @@ public class ValidateCommand : AsyncCommand<ValidateSettings>
 				await AnsiConsole.Status()
 					.StartAsync("Validating XML...", async ctx =>
 					{
-						await foreach (var result in _xmlValidator.ValidateAsync(settings.FilePath, schemaPath))
+						await foreach (var result in XmlValidationService.Instance.ValidateAsync(settings.FilePath, schemaPath))
 						{
 							results.Add(result);
 							if (settings.Verbose)
@@ -87,16 +83,12 @@ public class ValidateCommand : AsyncCommand<ValidateSettings>
 				if (settings.Verbose)
 				{
 					AnsiConsole.MarkupLine($"[blue]Validating YAML file: {settings.FilePath}[/]");
-					if (settings.GitHubActions)
-					{
-						AnsiConsole.MarkupLine("[blue]Using GitHub Actions specific validation[/]");
-					}
 				}
 
 				await AnsiConsole.Status()
 					.StartAsync("Validating YAML...", async ctx =>
 					{
-						await foreach (var result in _yamlValidator.ValidateAsync(settings.FilePath, settings.GitHubActions))
+						await foreach (var result in YamlValidationService.Instance.ValidateAsync(settings.FilePath))
 						{
 							results.Add(result);
 							if (settings.Verbose)

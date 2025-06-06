@@ -1,11 +1,12 @@
 using NMYAML.CLI.Models;
 using NMYAML.CLI.Services;
+using Open.Disposable;
 using System.Reflection;
 using System.Xml;
 
 namespace NMYAML.CLI.Tests;
 
-public class XmlValidationServiceStaticTests : IDisposable
+public class XmlValidationServiceStaticTests : DisposableBase
 {
 	private readonly string _tempDir;
 
@@ -231,10 +232,7 @@ public class XmlValidationServiceStaticTests : IDisposable
 		return xsdPath;
 	}
 
-#pragma warning disable IDE0079 // Remove unnecessary suppression
-	[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA1816:Dispose methods should call SuppressFinalize", Justification = "<Pending>")]
-#pragma warning restore IDE0079 // Remove unnecessary suppression
-	public void Dispose()
+	protected override void OnDispose()
 	{
 		if (Directory.Exists(_tempDir))
 		{
