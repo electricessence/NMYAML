@@ -1,6 +1,6 @@
 using NMYAML.CLI.Models;
-using NMYAML.CLI.Services;
 using NMYAML.CLI.Utilities;
+using NMYAML.CLI.Validators;
 using Spectre.Console.Cli;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -39,7 +39,7 @@ public class ValidateCommand : AsyncCommand<ValidateSettings>
 
 			var fileExt = Path.GetExtension(settings.FilePath).ToLowerInvariant();
 			var results = new List<ValidationResult>();
-			ValidationSummary summary;			if (fileExt == ".xml")
+			ValidationSummary summary; if (fileExt == ".xml")
 			{
 				// XML Validation
 				var schemaPath = settings.SchemaPath;
@@ -59,7 +59,7 @@ public class ValidateCommand : AsyncCommand<ValidateSettings>
 				await AnsiConsole.Status()
 					.StartAsync("Validating XML...", async ctx =>
 					{
-						await foreach (var result in XmlValidationService.Instance.ValidateAsync(settings.FilePath, schemaPath))
+						await foreach (var result in XML.ValidateAsync(settings.FilePath, schemaPath))
 						{
 							results.Add(result);
 							if (settings.Verbose)
@@ -93,7 +93,7 @@ public class ValidateCommand : AsyncCommand<ValidateSettings>
 				await AnsiConsole.Status()
 					.StartAsync("Validating YAML...", async ctx =>
 					{
-						await foreach (var result in YamlValidationService.Instance.ValidateAsync(settings.FilePath))
+						await foreach (var result in YAML.ValidateAsync(settings.FilePath))
 						{
 							results.Add(result);
 							if (settings.Verbose)
@@ -150,6 +150,7 @@ public class ValidateCommand : AsyncCommand<ValidateSettings>
 				AnsiConsole.WriteException(ex);
 			}
 
-			return 1;		}
+			return 1;
+		}
 	}
 }

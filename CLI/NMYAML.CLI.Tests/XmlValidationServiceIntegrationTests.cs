@@ -1,7 +1,3 @@
-using NMYAML.CLI.Models;
-using NMYAML.CLI.Services;
-using Open.Disposable;
-
 namespace NMYAML.CLI.Tests;
 
 public class XmlValidationServiceIntegrationTests : DisposableBase
@@ -21,7 +17,7 @@ public class XmlValidationServiceIntegrationTests : DisposableBase
 		var xmlPath = CreateValidXmlFile();
 
 		// Act
-		var results = await XmlValidationService.Instance.ValidateAsync(xmlPath).ToListAsync();
+		var results = await XML.ValidateAsync(xmlPath).ToListAsync();
 
 		// Assert
 		Assert.Empty(results); // No validation errors for valid XML
@@ -34,7 +30,7 @@ public class XmlValidationServiceIntegrationTests : DisposableBase
 		var xmlPath = CreateInvalidXmlFile();
 
 		// Act
-		var results = await XmlValidationService.Instance.ValidateAsync(xmlPath).ToListAsync();
+		var results = await XML.ValidateAsync(xmlPath).ToListAsync();
 
 		// Assert
 		Assert.NotEmpty(results);
@@ -49,7 +45,7 @@ public class XmlValidationServiceIntegrationTests : DisposableBase
 		var xsdPath = CreateMatchingXsdFile();
 
 		// Act
-		var results = await XmlValidationService.Instance.ValidateAsync(xmlPath, xsdPath).ToListAsync();
+		var results = await XML.ValidateAsync(xmlPath, xsdPath).ToListAsync();
 
 		// Assert
 		Assert.Empty(results); // No validation errors for valid XML against valid schema
@@ -63,7 +59,7 @@ public class XmlValidationServiceIntegrationTests : DisposableBase
 		var xsdPath = CreateInvalidXsdFile();
 
 		// Act
-		var results = await XmlValidationService.Instance.ValidateAsync(xmlPath, xsdPath).ToListAsync();
+		var results = await XML.ValidateAsync(xmlPath, xsdPath).ToListAsync();
 
 		// Assert
 		Assert.NotEmpty(results);
@@ -78,7 +74,7 @@ public class XmlValidationServiceIntegrationTests : DisposableBase
 		var xsdPath = CreateMatchingXsdFile();
 
 		// Act
-		var results = await XmlValidationService.Instance.ValidateAsync(xmlPath, xsdPath).ToListAsync();
+		var results = await XML.ValidateAsync(xmlPath, xsdPath).ToListAsync();
 
 		// Assert
 		Assert.NotEmpty(results);
@@ -92,7 +88,7 @@ public class XmlValidationServiceIntegrationTests : DisposableBase
 		var xmlPath = CreateValidXmlFile();
 
 		// Act - null XSD path should be allowed (optional schema validation)
-		var results = await XmlValidationService.Instance.ValidateAsync(xmlPath, null).ToListAsync();
+		var results = await XML.ValidateAsync(xmlPath, null).ToListAsync();
 
 		// Assert
 		Assert.Empty(results); // No validation errors for valid XML with no schema
@@ -106,7 +102,7 @@ public class XmlValidationServiceIntegrationTests : DisposableBase
 		var nonExistentXsdPath = Path.Combine(_tempDir, "nonexistent.xsd");
 
 		// Act
-		var results = await XmlValidationService.Instance.ValidateAsync(xmlPath, nonExistentXsdPath).ToListAsync();
+		var results = await XML.ValidateAsync(xmlPath, nonExistentXsdPath).ToListAsync();
 
 		// Assert
 		Assert.NotEmpty(results);

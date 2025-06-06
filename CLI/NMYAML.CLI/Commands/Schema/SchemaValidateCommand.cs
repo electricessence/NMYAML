@@ -1,6 +1,6 @@
 using NMYAML.CLI.Models;
-using NMYAML.CLI.Services;
 using NMYAML.CLI.Utilities;
+using NMYAML.CLI.Validators;
 using Spectre.Console.Cli;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -56,7 +56,7 @@ public class SchemaValidateCommand : AsyncCommand<SchemaValidateSettings>
 			await AnsiConsole.Status()
 				.StartAsync("Validating XML against schema...", async ctx =>
 				{
-					await foreach (var result in XmlValidationService.Instance.ValidateAsync(settings.XmlPath, settings.SchemaPath))
+					await foreach (var result in XML.ValidateAsync(settings.XmlPath, settings.SchemaPath))
 					{
 						results.Add(result);
 						if (settings.Verbose)

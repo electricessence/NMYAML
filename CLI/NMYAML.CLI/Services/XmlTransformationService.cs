@@ -1,4 +1,5 @@
 using NMYAML.CLI.Models;
+using NMYAML.CLI.Validators;
 
 namespace NMYAML.CLI.Services;
 
@@ -46,7 +47,7 @@ public partial class XmlTransformationService
 				var xmlValidationStart = DateTime.UtcNow;
 				var xmlResults = new List<ValidationResult>();
 
-				await foreach (var result in XmlValidationService.Instance.ValidateAsync(options.InputPath, options.XsdSchemaPath))
+				await foreach (var result in XML.ValidateAsync(options.InputPath, options.XsdSchemaPath))
 				{
 					xmlResults.Add(result);
 				}
@@ -85,7 +86,7 @@ public partial class XmlTransformationService
 				var yamlValidationStart = DateTime.UtcNow;
 				var yamlResults = new List<ValidationResult>();
 
-				await foreach (var result in YamlValidationService.Instance.ValidateAsync(options.OutputPath))
+				await foreach (var result in YAML.ValidateAsync(options.OutputPath))
 				{
 					yamlResults.Add(result);
 				}
@@ -170,7 +171,7 @@ public partial class XmlTransformationService
 
 		return yamlContent;
 	}
-	
+
 	/// <summary>
 	/// Transforms XML content to YAML using an XSLT transformation
 	/// </summary>

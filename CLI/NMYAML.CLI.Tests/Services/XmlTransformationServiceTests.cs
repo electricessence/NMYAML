@@ -1,32 +1,28 @@
-using NMYAML.CLI.Services;
-using System;
-using System.IO;
-using System.Threading.Tasks;
+using NMYAML.CLI.Transformers;
 using System.Xml;
-using Xunit;
 
 namespace NMYAML.CLI.Tests.Services;
 
-public class XmlTransformationServiceTests : IDisposable
+public class XmlTransformationTests : DisposableBase
 {
-    private readonly string _tempDir;
-    private readonly string _xsltPath;
+	private readonly string _tempDir;
+	private readonly string _xsltPath;
 
-    public XmlTransformationServiceTests()
-    {
-        _tempDir = Path.Combine(Path.GetTempPath(), $"XmlTransformationServiceTests_{Guid.NewGuid()}");
-        Directory.CreateDirectory(_tempDir);
-        
-        // Create a sample XSLT file for testing
-        _xsltPath = Path.Combine(_tempDir, "test-transform.xslt");
-        File.WriteAllText(_xsltPath, GetSampleXslt());
-    }
+	public XmlTransformationTests()
+	{
+		_tempDir = Path.Combine(Path.GetTempPath(), $"XmlTransformationTests_{Guid.NewGuid()}");
+		Directory.CreateDirectory(_tempDir);
 
-    [Fact]
-    public void TransformContentAsync_ValidXml_ReturnsValidYaml()
-    {
-        // Arrange
-        var xmlContent = """
+		// Create a sample XSLT file for testing
+		_xsltPath = Path.Combine(_tempDir, "test-transform.xslt");
+		File.WriteAllText(_xsltPath, GetSampleXslt());
+	}
+
+	[Fact]
+	public void TransformContent_ValidXml_ReturnsValidYaml()
+	{
+		// Arrange
+		var xmlContent = """
             <?xml version="1.0" encoding="utf-8"?>
             <workflow>
               <name>Test Workflow</name>
@@ -52,33 +48,33 @@ public class XmlTransformationServiceTests : IDisposable
             </workflow>
             """;
 
-        // Act
-        var yamlContent = XmlTransformationService.TransformContentAsync(xmlContent, _xsltPath);
+		// Act
+		var yamlContent = XmlToYaml.TransformContent(xmlContent, _xsltPath);
 
-        // Assert
-        Assert.NotNull(yamlContent);
-        Assert.NotEmpty(yamlContent);
-        
-        // Validate the YAML is well-formed
-        var validationResults = YamlValidationService.Instance.ValidateContentAsync(yamlContent);
-        Assert.Empty(validationResults.ToBlockingEnumerable());
-    }
+		// Assert
+		Assert.NotNull(yamlContent);
+		Assert.NotEmpty(yamlContent);
 
-    [Fact]
-    public void TransformContentAsync_EmptyXml_ThrowsException()
-    {
-        // Arrange
-        var emptyXml = "";
+		// Validate the YAML is well-formed
+		var validationResults = YAML.ValidateContentAsync(yamlContent);
+		Assert.Empty(validationResults.ToBlockingEnumerable());
+	}
 
-        // Act & Assert
-        Assert.Throws<XmlException>(() => XmlTransformationService.TransformContentAsync(emptyXml, _xsltPath));
-    }
+	[Fact]
+	public void TransformContent_EmptyXml_ThrowsException()
+	{
+		// Arrange
+		var emptyXml = "";
 
-    [Fact]
-    public void TransformContentAsync_InvalidXml_ThrowsException()
-    {
-        // Arrange
-        var invalidXml = """
+		// Act & Assert
+		Assert.Throws<XmlException>(() => XmlToYaml.TransformContent(emptyXml, _xsltPath));
+	}
+
+	[Fact]
+	public void TransformContent_InvalidXml_ThrowsException()
+	{
+		// Arrange
+		var invalidXml = """
             <?xml version="1.0" encoding="utf-8"?>
             <workflow>
               <name>Test Workflow</name>
@@ -90,13 +86,13 @@ public class XmlTransformationServiceTests : IDisposable
             </workflow
             """; // Missing closing tag
 
-        // Act & Assert
-        Assert.Throws<XmlException>(() => XmlTransformationService.TransformContentAsync(invalidXml, _xsltPath));
-    }
+		// Act & Assert
+		Assert.Throws<XmlException>(() => XmlToYaml.TransformContent(invalidXml, _xsltPath));
+	}
 
-    private string GetSampleXslt()
-    {
-        return """
+	private static string GetSampleXslt()
+	{
+		return """
             <?xml version="1.0" encoding="UTF-8"?>
             <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
               <xsl:output method="text" indent="no" />
@@ -163,13 +159,13 @@ public class XmlTransformationServiceTests : IDisposable
               </xsl:template>
             </xsl:stylesheet>
             """;
-    }
+	}
 
-    public void Dispose()
-    {
-        if (Directory.Exists(_tempDir))
-        {
-            Directory.Delete(_tempDir, true);
-        }
-    }
+	protected override void OnDispose()
+	{
+		if (Directory.Exists(_tempDir))
+		{
+			Directory.Delete(_tempDir, true);
+		}
+	}
 }

@@ -1,10 +1,4 @@
-using NMYAML.CLI.Models;
 using NMYAML.CLI.Services;
-using System;
-using System.IO;
-using System.Threading.Tasks;
-using System.Xml;
-using Xunit;
 
 namespace NMYAML.CLI.Tests;
 
@@ -15,32 +9,32 @@ namespace NMYAML.CLI.Tests;
 /// c) Invalid XML fails schema validation.
 /// d) Valid XML transforms into valid YAML.
 /// </summary>
-public class ContentValidationIntegrationTests : IDisposable
+public class ContentValidationIntegrationTests : DisposableBase
 {
-    private readonly string _tempDir;
-    private readonly string _xsltPath;
-    private readonly string _xsdPath;
+	private readonly string _tempDir;
+	private readonly string _xsltPath;
+	private readonly string _xsdPath;
 
-    public ContentValidationIntegrationTests()
-    {
-        // Setup test directory and files
-        _tempDir = Path.Combine(Path.GetTempPath(), $"ContentValidationIntegrationTests_{Guid.NewGuid()}");
-        Directory.CreateDirectory(_tempDir);
-        
-        // Create the sample XSD schema
-        _xsdPath = Path.Combine(_tempDir, "workflow.xsd");
-        File.WriteAllText(_xsdPath, GetSampleXsd());
-        
-        // Create the sample XSLT transform
-        _xsltPath = Path.Combine(_tempDir, "workflow-transform.xslt");
-        File.WriteAllText(_xsltPath, GetSampleXslt());
-    }
+	public ContentValidationIntegrationTests()
+	{
+		// Setup test directory and files
+		_tempDir = Path.Combine(Path.GetTempPath(), $"ContentValidationIntegrationTests_{Guid.NewGuid()}");
+		Directory.CreateDirectory(_tempDir);
 
-    [Fact]
-    public async Task Requirement_A_ValidYaml_PassesValidation()
-    {
-        // Arrange
-        var validYaml = """
+		// Create the sample XSD schema
+		_xsdPath = Path.Combine(_tempDir, "workflow.xsd");
+		File.WriteAllText(_xsdPath, GetSampleXsd());
+
+		// Create the sample XSLT transform
+		_xsltPath = Path.Combine(_tempDir, "workflow-transform.xslt");
+		File.WriteAllText(_xsltPath, GetSampleXslt());
+	}
+
+	[Fact]
+	public async Task Requirement_A_ValidYaml_PassesValidation()
+	{
+		// Arrange
+		var validYaml = """
             name: Test Workflow
             on:
               push:
@@ -55,18 +49,18 @@ public class ContentValidationIntegrationTests : IDisposable
                     run: echo Building...
             """;
 
-        // Act
-        var results = await YamlValidationService.Instance.ValidateContentAsync(validYaml).ToListAsync();
+		// Act
+		var results = await YAML.ValidateContentAsync(validYaml).ToListAsync();
 
-        // Assert
-        Assert.Empty(results);
-    }
+		// Assert
+		Assert.Empty(results);
+	}
 
-    [Fact]
-    public async Task Requirement_B_ValidXml_PassesSchemaValidation()
-    {
-        // Arrange
-        var validXml = """
+	[Fact]
+	public async Task Requirement_B_ValidXml_PassesSchemaValidation()
+	{
+		// Arrange
+		var validXml = """
             <?xml version="1.0" encoding="utf-8"?>
             <workflow xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
               <name>Test Workflow</name>
@@ -92,18 +86,18 @@ public class ContentValidationIntegrationTests : IDisposable
             </workflow>
             """;
 
-        // Act
-        var results = await XmlValidationService.Instance.ValidateContentAsync(validXml, _xsdPath).ToListAsync();
+		// Act
+		var results = await XML.ValidateContentAsync(validXml, _xsdPath).ToListAsync();
 
-        // Assert
-        Assert.Empty(results);
-    }
+		// Assert
+		Assert.Empty(results);
+	}
 
-    [Fact]
-    public async Task Requirement_C_InvalidXml_FailsSchemaValidation()
-    {
-        // Arrange
-        var invalidXml = """
+	[Fact]
+	public async Task Requirement_C_InvalidXml_FailsSchemaValidation()
+	{
+		// Arrange
+		var invalidXml = """
             <?xml version="1.0" encoding="utf-8"?>
             <workflow xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
               <name>Test Workflow</name>
@@ -125,19 +119,19 @@ public class ContentValidationIntegrationTests : IDisposable
             </workflow>
             """;
 
-        // Act
-        var results = await XmlValidationService.Instance.ValidateContentAsync(invalidXml, _xsdPath).ToListAsync();
+		// Act
+		var results = await XML.ValidateContentAsync(invalidXml, _xsdPath).ToListAsync();
 
-        // Assert
-        Assert.NotEmpty(results);
-        Assert.Contains(results, r => r.Type == "XSD" && r.Severity == ValidationSeverity.Error);
-    }
+		// Assert
+		Assert.NotEmpty(results);
+		Assert.Contains(results, r => r.Type == "XSD" && r.Severity == ValidationSeverity.Error);
+	}
 
-    [Fact]
-    public async Task Requirement_D_ValidXml_TransformsToValidYaml()
-    {
-        // Arrange
-        var validXml = """
+	[Fact]
+	public async Task Requirement_D_ValidXml_TransformsToValidYaml()
+	{
+		// Arrange
+		var validXml = """
             <?xml version="1.0" encoding="utf-8"?>
             <workflow xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
               <name>Test Workflow</name>
@@ -163,25 +157,25 @@ public class ContentValidationIntegrationTests : IDisposable
             </workflow>
             """;
 
-        // Act - Step 1: Validate XML is valid
-        var xmlResults = await XmlValidationService.Instance.ValidateContentAsync(validXml, _xsdPath).ToListAsync();
-        
-        // Assert - Step 1
-        Assert.Empty(xmlResults);
-        
-        // Act - Step 2: Transform XML to YAML
-        var yaml = XmlTransformationService.TransformContentAsync(validXml, _xsltPath);
-        
-        // Act - Step 3: Validate generated YAML
-        var yamlResults = await YamlValidationService.Instance.ValidateContentAsync(yaml).ToListAsync();
-        
-        // Assert - Step 3
-        Assert.Empty(yamlResults);
-    }
+		// Act - Step 1: Validate XML is valid
+		var xmlResults = await XML.ValidateContentAsync(validXml, _xsdPath).ToListAsync();
 
-    private string GetSampleXsd()
-    {
-        return """
+		// Assert - Step 1
+		Assert.Empty(xmlResults);
+
+		// Act - Step 2: Transform XML to YAML
+		var yaml = XmlTransformationService.TransformContentAsync(validXml, _xsltPath);
+
+		// Act - Step 3: Validate generated YAML
+		var yamlResults = await YAML.ValidateContentAsync(yaml).ToListAsync();
+
+		// Assert - Step 3
+		Assert.Empty(yamlResults);
+	}
+
+	private static string GetSampleXsd()
+	{
+		return """
             <?xml version="1.0" encoding="UTF-8"?>
             <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
               
@@ -244,11 +238,11 @@ public class ContentValidationIntegrationTests : IDisposable
               
             </xs:schema>
             """;
-    }
+	}
 
-    private string GetSampleXslt()
-    {
-        return """
+	private static string GetSampleXslt()
+	{
+		return """
             <?xml version="1.0" encoding="UTF-8"?>
             <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
               <xsl:output method="text" indent="no" />
@@ -315,13 +309,13 @@ public class ContentValidationIntegrationTests : IDisposable
               </xsl:template>
             </xsl:stylesheet>
             """;
-    }
+	}
 
-    public void Dispose()
-    {
-        if (Directory.Exists(_tempDir))
-        {
-            Directory.Delete(_tempDir, true);
-        }
-    }
+	protected override void OnDispose()
+	{
+		if (Directory.Exists(_tempDir))
+		{
+			Directory.Delete(_tempDir, true);
+		}
+	}
 }

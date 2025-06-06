@@ -1,6 +1,7 @@
 using NMYAML.CLI.Models;
 using NMYAML.CLI.Services;
 using NMYAML.CLI.Utilities;
+using NMYAML.CLI.Validators;
 using Spectre.Console.Cli;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -70,7 +71,7 @@ public class TransformCommand : AsyncCommand<TransformSettings>
 				{
 					var xmlValidationStart = Stopwatch.StartNew();
 
-					await foreach (var result in XmlValidationService.Instance.ValidateAsync(settings.InputPath, xsdPath))
+					await foreach (var result in XML.ValidateAsync(settings.InputPath, xsdPath))
 					{
 						xmlValidationResults.Add(result);
 						if (settings.Verbose)
@@ -133,7 +134,7 @@ public class TransformCommand : AsyncCommand<TransformSettings>
 				{
 					var yamlValidationStart = Stopwatch.StartNew();
 
-					await foreach (var result in YamlValidationService.Instance.ValidateAsync(settings.OutputPath))
+					await foreach (var result in YAML.ValidateAsync(settings.OutputPath))
 					{
 						yamlValidationResults.Add(result);
 						if (settings.Verbose)

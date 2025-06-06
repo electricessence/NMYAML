@@ -1,6 +1,3 @@
-using NMYAML.CLI.Models;
-using Open.Disposable;
-
 namespace NMYAML.CLI.Services.Tests;
 
 public class XmlValidationServiceTests : DisposableBase
@@ -16,7 +13,7 @@ public class XmlValidationServiceTests : DisposableBase
 	public async Task ValidateAsync_WithNullXmlPath_ReturnsError()
 	{
 		// Act
-		var results = await XmlValidationService.Instance.ValidateAsync(null!).ToListAsync();
+		var results = await XML.ValidateAsync(null!).ToListAsync();
 
 		// Assert
 		Assert.Single(results);
@@ -29,7 +26,7 @@ public class XmlValidationServiceTests : DisposableBase
 	public async Task ValidateAsync_WithEmptyXmlPath_ReturnsError()
 	{
 		// Act
-		var results = await XmlValidationService.Instance.ValidateAsync("").ToListAsync();
+		var results = await XML.ValidateAsync("").ToListAsync();
 
 		// Assert
 		Assert.Single(results);
@@ -42,7 +39,7 @@ public class XmlValidationServiceTests : DisposableBase
 	public async Task ValidateAsync_WithBlankXmlPath_ReturnsError()
 	{
 		// Act
-		var results = await XmlValidationService.Instance.ValidateAsync("   ").ToListAsync();
+		var results = await XML.ValidateAsync("   ").ToListAsync();
 
 		// Assert
 		Assert.Single(results);
@@ -55,7 +52,7 @@ public class XmlValidationServiceTests : DisposableBase
 	public async Task ValidateAsync_WithNonExistentXmlPath_ReturnsError()
 	{
 		// Act
-		var results = await XmlValidationService.Instance.ValidateAsync("nonexistent.xml").ToListAsync();
+		var results = await XML.ValidateAsync("nonexistent.xml").ToListAsync();
 
 		// Assert
 		Assert.Single(results);
@@ -70,7 +67,7 @@ public class XmlValidationServiceTests : DisposableBase
 		var xmlPath = CreateValidXmlFile();
 
 		// Act
-		var results = await XmlValidationService.Instance.ValidateAsync(xmlPath, "nonexistent.xsd").ToListAsync();
+		var results = await XML.ValidateAsync(xmlPath, "nonexistent.xsd").ToListAsync();
 
 		// Assert
 		Assert.Single(results);
@@ -84,7 +81,7 @@ public class XmlValidationServiceTests : DisposableBase
 		var xmlPath = CreateInvalidXmlFile();
 
 		// Act
-		var results = await XmlValidationService.Instance.ValidateAsync(xmlPath).ToListAsync();
+		var results = await XML.ValidateAsync(xmlPath).ToListAsync();
 
 		// Assert
 		Assert.NotEmpty(results);
@@ -98,7 +95,7 @@ public class XmlValidationServiceTests : DisposableBase
 		var xmlPath = CreateValidXmlFile();
 
 		// Act
-		var results = await XmlValidationService.Instance.ValidateAsync(xmlPath).ToListAsync();
+		var results = await XML.ValidateAsync(xmlPath).ToListAsync();
 
 		// Assert
 		Assert.Empty(results);
@@ -112,7 +109,7 @@ public class XmlValidationServiceTests : DisposableBase
 		var xsdPath = CreateMatchingXsdFile();
 
 		// Act
-		var results = await XmlValidationService.Instance.ValidateAsync(xmlPath, xsdPath).ToListAsync();
+		var results = await XML.ValidateAsync(xmlPath, xsdPath).ToListAsync();
 
 		// Assert
 		Assert.Empty(results);
@@ -126,7 +123,7 @@ public class XmlValidationServiceTests : DisposableBase
 		var xsdPath = CreateInvalidXsdFile();
 
 		// Act
-		var results = await XmlValidationService.Instance.ValidateAsync(xmlPath, xsdPath).ToListAsync();
+		var results = await XML.ValidateAsync(xmlPath, xsdPath).ToListAsync();
 
 		// Assert
 		Assert.NotEmpty(results);
@@ -141,7 +138,7 @@ public class XmlValidationServiceTests : DisposableBase
 		var xsdPath = CreateMatchingXsdFile();
 
 		// Act
-		var results = await XmlValidationService.Instance.ValidateAsync(xmlPath, xsdPath).ToListAsync();
+		var results = await XML.ValidateAsync(xmlPath, xsdPath).ToListAsync();
 
 		// Assert
 		Assert.NotEmpty(results);

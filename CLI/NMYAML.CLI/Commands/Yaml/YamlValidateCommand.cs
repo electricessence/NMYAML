@@ -1,6 +1,6 @@
 using NMYAML.CLI.Models;
-using NMYAML.CLI.Services;
 using NMYAML.CLI.Utilities;
+using NMYAML.CLI.Validators;
 using Spectre.Console.Cli;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -55,7 +55,7 @@ public class YamlValidateCommand : AsyncCommand<YamlValidateSettings>
 			await AnsiConsole.Status()
 				.StartAsync("Validating YAML file...", async ctx =>
 				{
-					await foreach (var result in YamlValidationService.Instance.ValidateAsync(settings.YamlPath))
+					await foreach (var result in YAML.ValidateAsync(settings.YamlPath))
 					{
 						results.Add(result);
 						if (settings.Verbose)
