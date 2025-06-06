@@ -1,5 +1,6 @@
 using NMYAML.Core.Models;
 using NMYAML.Core.Services;
+using NMYAML.Core.Utilities;
 using NMYAML.CLI.Utilities;
 using NMYAML.Core.Validators;
 using Spectre.Console.Cli;
@@ -37,17 +38,19 @@ public class TransformCommand : AsyncCommand<TransformSettings>
 			if (!File.Exists(settings.InputPath))
 			{
 				AnsiConsole.MarkupLine($"[red]Error: Input file not found: {settings.InputPath}[/]");
-				return 1;
-			}
-
-			// Check if output file exists and handle force overwrite
-			if (File.Exists(settings.OutputPath) && !settings.ForceOverwrite)
+				return 1;			}
+			
+			// Handle output file backup/overwrite
+			var backupResult = FileBackupUtility.HandleOutputFile(settings.OutputPath, settings.Overwrite);
+			if (!backupResult.ShouldProceed)
 			{
-				if (!AnsiConsole.Confirm($"Output file exists: {settings.OutputPath}. Overwrite?"))
-				{
-					AnsiConsole.MarkupLine("[yellow]Operation cancelled.[/]");
-					return 0;
-				}
+				AnsiConsole.MarkupLine("[yellow]Operation cancelled.[/]");
+				return 0;
+			}
+			
+			if (backupResult.BackupCreated && backupResult.BackupPath != null)
+			{
+				AnsiConsole.MarkupLine($"[yellow]Existing file backed up to: {Path.GetFileName(backupResult.BackupPath)}[/]");
 			}
 
 			// Create output directory if it doesn't exist

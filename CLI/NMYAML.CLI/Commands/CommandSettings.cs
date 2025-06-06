@@ -23,14 +23,14 @@ public class TransformSettings : BaseSettings
 	[CommandArgument(1, "<OUTPUT>")]
 	[Description("Output YAML file path")]
 	public string OutputPath { get; set; } = string.Empty;
-
 	[CommandOption("--xslt")]
 	[Description("Custom XSLT transform file path")]
 	public string? XsltPath { get; set; }
-
-	[CommandOption("-f|--force")]
-	[Description("Force overwrite existing output file")]
-	public bool ForceOverwrite { get; set; }
+	
+	[CommandOption("--overwrite")]
+	[Description("Overwrite existing output file without backup (default: false, creates backup)")]
+	[DefaultValue(false)]
+	public bool Overwrite { get; set; } = false;
 }
 
 public class ValidateSettings : BaseSettings
@@ -69,14 +69,14 @@ public class ConvertSettings : BaseSettings
 	[CommandOption("--skip-xml-validation")]
 	[Description("Skip XML schema validation")]
 	public bool SkipXmlValidation { get; set; }
-
 	[CommandOption("--skip-yaml-validation")]
 	[Description("Skip YAML syntax validation")]
 	public bool SkipYamlValidation { get; set; }
-
-	[CommandOption("-f|--force")]
-	[Description("Force overwrite existing output file")]
-	public bool ForceOverwrite { get; set; }
+	
+	[CommandOption("--overwrite")]
+	[Description("Overwrite existing output file without backup (default: false, creates backup)")]
+	[DefaultValue(false)]
+	public bool Overwrite { get; set; } = false;
 
 	[CommandOption("-d|--detailed")]
 	[Description("Show detailed validation results")]

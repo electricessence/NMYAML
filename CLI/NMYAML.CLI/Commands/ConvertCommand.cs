@@ -1,5 +1,6 @@
 using NMYAML.Core.Models;
 using NMYAML.Core.Services;
+using NMYAML.Core.Utilities;
 using NMYAML.CLI.Utilities;
 using Spectre.Console.Cli;
 using System.ComponentModel;
@@ -22,13 +23,12 @@ public class ConvertCommand : AsyncCommand<ConvertSettings>
 	public override async Task<int> ExecuteAsync(CommandContext context, ConvertSettings settings)
 	{
 		try
-		{
-			// Configure console colors
+		{			// Configure console colors
 			if (settings.NoColor)
 			{
 				AnsiConsole.Profile.Capabilities.ColorSystem = ColorSystem.NoColors;
 			}
-
+			
 			// Create conversion options
 			var options = new ConversionOptions(
 				InputPath: settings.InputPath,
@@ -37,18 +37,19 @@ public class ConvertCommand : AsyncCommand<ConvertSettings>
 				XsltPath: settings.XsltPath ?? GetDefaultXsltPath(),
 				SkipXmlValidation: settings.SkipXmlValidation,
 				SkipYamlValidation: settings.SkipYamlValidation,
-				ForceOverwrite: settings.ForceOverwrite,
+				ForceOverwrite: settings.Overwrite,
 				DetailedOutput: settings.DetailedOutput
-			);
-
-			// Check if output file exists and handle force overwrite
-			if (File.Exists(settings.OutputPath) && !settings.ForceOverwrite)
+			);			// Handle output file backup/overwrite
+			var backupResult = FileBackupUtility.HandleOutputFile(settings.OutputPath, settings.Overwrite);
+			if (!backupResult.ShouldProceed)
 			{
-				if (!AnsiConsole.Confirm($"Output file exists: {settings.OutputPath}. Overwrite?"))
-				{
-					AnsiConsole.MarkupLine("[yellow]Operation cancelled.[/]");
-					return 0;
-				}
+				AnsiConsole.MarkupLine("[yellow]Operation cancelled.[/]");
+				return 0;
+			}
+			
+			if (backupResult.BackupCreated && backupResult.BackupPath != null)
+			{
+				AnsiConsole.MarkupLine($"[yellow]Existing file backed up to: {Path.GetFileName(backupResult.BackupPath)}[/]");
 			}
 
 			if (settings.Verbose)
