@@ -66,7 +66,7 @@ if (-not (Test-Path $CliProject)) {
 }
 
 # Build validation arguments
-$validationArgs = @("validate-yaml", $Path)
+$validationArgs = @("validate", $Path)
 
 if ($Detailed) { $validationArgs += "--detailed" }
 if ($VerboseOutput) { $validationArgs += "--verbose" }
