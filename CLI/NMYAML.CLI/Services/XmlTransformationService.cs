@@ -170,6 +170,51 @@ public partial class XmlTransformationService
 
 		return yamlContent;
 	}
+	
+	/// <summary>
+	/// Transforms XML content to YAML using an XSLT transformation
+	/// </summary>
+	/// <param name="xmlContent">The XML content to transform</param>
+	/// <param name="xsltPath">Path to the XSLT file</param>
+	/// <returns>The transformed YAML content as a string</returns>
+	public static string TransformContentAsync(string xmlContent, string xsltPath)
+	{
+		// Create XSL transform
+		var xslt = new XslCompiledTransform();
+		var xsltSettings = new XsltSettings(enableDocumentFunction: true, enableScript: true);
+		xslt.Load(xsltPath, xsltSettings, null);
+
+		// Create XML reader from content
+		var xmlReaderSettings = new XmlReaderSettings
+		{
+			DtdProcessing = DtdProcessing.Parse
+		};
+
+		using var stringReader = new StringReader(xmlContent);
+		using var xmlReader = XmlReader.Create(stringReader, xmlReaderSettings);
+
+		// Create output writer
+		var writerSettings = new XmlWriterSettings
+		{
+			Indent = false,
+			OmitXmlDeclaration = true,
+			ConformanceLevel = ConformanceLevel.Fragment,
+			Encoding = Encoding.UTF8
+		};
+
+		// Transform to string
+		using var outputStringWriter = new StringWriter();
+		using var xmlWriter = XmlWriter.Create(outputStringWriter, writerSettings);
+
+		xslt.Transform(xmlReader, xmlWriter);
+
+		var yamlContent = outputStringWriter.ToString();
+
+		// Clean up YAML output
+		yamlContent = CleanYamlOutput(yamlContent);
+
+		return yamlContent;
+	}
 
 	private static async Task PerformTransformation(string xmlPath, string xsltPath, string outputPath)
 	{

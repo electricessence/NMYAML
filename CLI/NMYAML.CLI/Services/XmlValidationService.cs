@@ -15,7 +15,10 @@ public sealed class XmlValidationService : AsyncValidationServiceBase<Params>
 	/// </summary>
 	/// <param name="XmlPath">Path to the XML file to validate</param>
 	/// <param name="XsdPath">Optional path to the XSD schema file for validation</param>
-	public readonly record struct Params(string XmlPath, string? XsdPath = null);
+	public readonly record struct Params(string XmlPath, string? XsdPath = null)
+	{
+		public string? Content { get; init; } = null;
+	}
 
 	private XmlValidationService() { }
 
@@ -27,20 +30,30 @@ public sealed class XmlValidationService : AsyncValidationServiceBase<Params>
 	/// <returns>Async enumerable of validation results (null = success, ValidationResult = failure)</returns>
 	protected override async IAsyncEnumerable<ValidationResult?> AsyncValidations(Params input)
 	{
-		// Step 1: Validate XML file path is present and valid.
-		var xml = ValidateXmlPath(input.XmlPath);
-		yield return xml;
+		// Initialize content variable for either path or direct content
+		string? xmlContent = input.Content;
 
-		// Step 2: Validate the XML if it exists.
-		string? xmlContent = xml is null ? File.ReadAllText(input.XmlPath) : null;
-		if (xmlContent is not null) yield return await ValidateXmlSyntaxOnlyAsync(xmlContent).ConfigureAwait(false);
+		// If content is null, validate the path and load content from file
+		if (xmlContent is null)
+		{
+			// Step 1: Validate XML file path is present and valid.
+			var xml = ValidateXmlPath(input.XmlPath);
+			yield return xml;
 
-		// Step 3: If an XSD path is provided, validate it exists.
+			// Step 2: Load XML content if path is valid
+			xmlContent = xml is null ? File.ReadAllText(input.XmlPath) : null;
+		}
+
+		// Step 3: Validate the XML content if available
+		if (xmlContent is not null)
+			yield return await ValidateXmlSyntaxOnlyAsync(xmlContent).ConfigureAwait(false);
+
+		// Step 4: If an XSD path is provided, validate it exists.
 		var xsd = ValidateXsdPath(input.XsdPath);
 		yield return xsd;
-
-		// Step 4: If XML is valid and XSD exists, validate XML against XSD schema.
-		if (xmlContent is not null && xsd is null) // Only proceed if XML content is valid and XSD path is valid
+		
+		// Step 5: If XML is valid and XSD exists, validate XML against XSD schema.
+		if (xmlContent is not null && xsd is null && input.XsdPath is not null) // Only proceed if XML content is valid and XSD path is valid
 		{
 			yield return await ValidateXmlAgainstSchema(xmlContent, input.XsdPath);
 		}
@@ -49,6 +62,15 @@ public sealed class XmlValidationService : AsyncValidationServiceBase<Params>
 	/// <inheritdoc cref="AsyncValidationServiceBase{T}.ValidateAsync(T)"/>
 	public IAsyncEnumerable<ValidationResult> ValidateAsync(string xmlPath, string? xsdPath = null)
 		=> ValidateAsync(new Params(xmlPath, xsdPath));
+		
+	/// <summary>
+	/// Validates XML content directly instead of from a file path
+	/// </summary>
+	/// <param name="xmlContent">The XML content to validate</param>
+	/// <param name="xsdPath">Optional path to the XSD schema file for validation</param>
+	/// <returns>Async enumerable of validation results</returns>
+	public IAsyncEnumerable<ValidationResult> ValidateContentAsync(string xmlContent, string? xsdPath = null)
+		=> ValidateAsync(new Params("content", xsdPath) { Content = xmlContent });
 
 	#region Input & File Path Validation
 	private ValidationResult? ValidateFile(string filePath, string description)
