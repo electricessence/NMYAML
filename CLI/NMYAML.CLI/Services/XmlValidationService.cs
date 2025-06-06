@@ -20,7 +20,6 @@ public sealed class XmlValidationService : AsyncValidationServiceBase<Params>
 	private XmlValidationService() { }
 
 	public static XmlValidationService Instance { get; } = new();
-
 	/// <summary>
 	/// Performs XML validation against XSD schema
 	/// </summary>
@@ -41,7 +40,10 @@ public sealed class XmlValidationService : AsyncValidationServiceBase<Params>
 		yield return xsd;
 
 		// Step 4: If XML is valid and XSD exists, validate XML against XSD schema.
-		yield return await ValidateXmlAgainstSchema(xmlContent, input.XsdPath);
+		if (xmlContent is not null && xsd is null) // Only proceed if XML content is valid and XSD path is valid
+		{
+			yield return await ValidateXmlAgainstSchema(xmlContent, input.XsdPath);
+		}
 	}
 
 	/// <inheritdoc cref="AsyncValidationServiceBase{T}.ValidateAsync(T)"/>
@@ -64,11 +66,10 @@ public sealed class XmlValidationService : AsyncValidationServiceBase<Params>
 		if (xmlPath is null) return new("Input", ValidationSeverity.Error, "XML path cannot be null");
 		return ValidateFile(xmlPath, "XML");
 	}
-
 	private ValidationResult? ValidateXsdPath(string? xsdPath)
 	{
 		if (xsdPath is null) return ValidationResult.Success;
-		return ValidateFile(xsdPath, "XML");
+		return ValidateFile(xsdPath, "XSD schema");
 	}
 	#endregion
 
@@ -160,12 +161,23 @@ public sealed class XmlValidationService : AsyncValidationServiceBase<Params>
 				$"Error loading XSD schema: {ex.Message}", 0, ""));
 		}
 	}
-
 	/// <summary>
 	/// Validates XML using the configured reader settings
 	/// </summary>
 	private static async Task<ValidationResult?> ValidateXmlWithReaderAsync(string xmlContent, XmlReaderSettings readerSettings)
 	{
+		ValidationResult? validationError = null;
+		
+		// Set up validation event handler for schema validation
+		readerSettings.ValidationEventHandler += (sender, e) =>
+		{
+			if (validationError == null) // Only capture the first error
+			{
+				validationError = new ValidationResult("XSD", ValidationSeverity.Error,
+					e.Message, e.Exception?.Data.Contains("LineNumber") == true ? (long)e.Exception.Data["LineNumber"]! : 0, "");
+			}
+		};
+
 		try
 		{
 			using var stringReader = new StringReader(xmlContent);
@@ -176,10 +188,14 @@ public sealed class XmlValidationService : AsyncValidationServiceBase<Params>
 				await Task.Yield(); // Allow other work to proceed
 			}
 
-			return null; // Success
+			return validationError; // Return validation error if any, null for success
 		}
 		catch (Exception ex)
 		{
+			// If we already have a validation error, return it instead of the exception
+			if (validationError != null)
+				return validationError;
+				
 			return new ValidationResult("Exception", ValidationSeverity.Error,
 				$"XML validation failed: {ex.Message}", 0, "");
 		}

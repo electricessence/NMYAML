@@ -6,10 +6,10 @@ namespace NMYAML.CLI.Services.Tests;
 public class XmlValidationServiceTests : DisposableBase
 {
 	private readonly string _tempDir;
-
 	public XmlValidationServiceTests()
 	{
 		_tempDir = Path.Combine(Path.GetTempPath(), $"XmlValidationServiceTests_{Guid.NewGuid()}");
+		Directory.CreateDirectory(_tempDir);
 	}
 
 	[Fact]
@@ -63,7 +63,6 @@ public class XmlValidationServiceTests : DisposableBase
 		Assert.Equal(ValidationSeverity.Error, results[0].Severity);
 		Assert.Equal("XML file not found", results[0].Message);
 	}
-
 	[Fact]
 	public async Task ValidateAsync_WithNonExistentXsdPath_ReturnsError()
 	{
@@ -74,8 +73,8 @@ public class XmlValidationServiceTests : DisposableBase
 		var results = await XmlValidationService.Instance.ValidateAsync(xmlPath, "nonexistent.xsd").ToListAsync();
 
 		// Assert
-		Assert.Equal(2, results.Count);
-		Assert.Contains(results, r => r.Type == "File" && r.Severity == ValidationSeverity.Error && r.Message == "XML file not found");
+		Assert.Single(results);
+		Assert.Contains(results, r => r.Type == "File" && r.Severity == ValidationSeverity.Error && r.Message == "XSD schema file not found");
 	}
 
 	[Fact]
