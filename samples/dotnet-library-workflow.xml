@@ -3,40 +3,47 @@
   <gh:name>Build &amp; Publish .NET Library</gh:name>
   <gh:run-name>[${{ github.ref_name }}] .NET Library CI/CD Pipeline</gh:run-name>
   
-  <gh:on>
-    <gh:push>
+  <gh:on>    <gh:push>
       <gh:branches>
-        <gh:branch>main</gh:branch>
-        <gh:branch>develop</gh:branch>
-        <gh:branch>feature/*</gh:branch>
-        <gh:branch>release/*</gh:branch>
+        <gh:item>main</gh:item>
+        <gh:item>develop</gh:item>
+        <gh:item>feature/*</gh:item>
+        <gh:item>release/*</gh:item>
       </gh:branches>
       <gh:paths>
-        <gh:path>src/**</gh:path>
-        <gh:path>**/*.csproj</gh:path>
-        <gh:path>**/*.sln</gh:path>
-        <gh:path>tests/**</gh:path>
+        <gh:item>src/**</gh:item>
+        <gh:item>**/*.csproj</gh:item>
+        <gh:item>**/*.sln</gh:item>
+        <gh:item>tests/**</gh:item>
       </gh:paths>
     </gh:push>
     <gh:pull_request>
       <gh:branches>
-        <gh:branch>main</gh:branch>
-        <gh:branch>develop</gh:branch>
+        <gh:item>main</gh:item>
+        <gh:item>develop</gh:item>
       </gh:branches>
     </gh:pull_request>
-    <gh:workflow_dispatch>
-      <gh:inputs>
-        <gh:input name="force_publish" type="boolean" description="Force publish even if no changes detected" default="false" required="false"/>
-        <gh:input name="skip_tests" type="boolean" description="Skip test execution (not recommended)" default="false" required="false"/>
+    <gh:workflow_dispatch>      <gh:inputs>
+        <gh:input name="force_publish">
+          <gh:type>boolean</gh:type>
+          <gh:description>Force publish even if no changes detected</gh:description>
+          <gh:default>false</gh:default>
+          <gh:required>false</gh:required>
+        </gh:input>
+        <gh:input name="skip_tests">
+          <gh:type>boolean</gh:type>
+          <gh:description>Skip test execution (not recommended)</gh:description>
+          <gh:default>false</gh:default>
+          <gh:required>false</gh:required>
+        </gh:input>
       </gh:inputs>
     </gh:workflow_dispatch>
   </gh:on>
-
   <gh:env>
-    <gh:variable name="DOTNET_VERSION">8.0.x</gh:variable>
-    <gh:variable name="BUILD_CONFIGURATION">Debug</gh:variable>
-    <gh:variable name="PUBLISH_CONFIGURATION">Release</gh:variable>
-    <gh:variable name="NUGET_PACKAGES_PATH">~/.nuget/packages</gh:variable>
+    <gh:var name="DOTNET_VERSION">8.0.x</gh:var>
+    <gh:var name="BUILD_CONFIGURATION">Debug</gh:var>
+    <gh:var name="PUBLISH_CONFIGURATION">Release</gh:var>
+    <gh:var name="NUGET_PACKAGES_PATH">~/.nuget/packages</gh:var>
   </gh:env>
 
   <gh:concurrency>
@@ -51,10 +58,11 @@
   </gh:permissions>
 
   <gh:jobs>
-    <!-- Block A: Build &amp; Test -->
-    <gh:job id="build-and-test">
+    <!-- Block A: Build &amp; Test -->    <gh:job id="build-and-test">
       <gh:name>🔨 Build &amp; Test</gh:name>
-      <gh:runs-on>ubuntu-latest</gh:runs-on>
+      <gh:runs-on>
+        <gh:runner>ubuntu-latest</gh:runner>
+      </gh:runs-on>
       <gh:outputs>
         <gh:output name="build_success">build_success</gh:output>
         <gh:output name="test_success">test_success</gh:output>
@@ -153,13 +161,15 @@
           </gh:run>
         </gh:step>
       </gh:steps>
-    </gh:job>
-
-    <!-- Block B: Check for Tag -->
+    </gh:job>    <!-- Block B: Check for Tag -->
     <gh:job id="check-tag">
       <gh:name>🏷️ Check for Tag</gh:name>
-      <gh:runs-on>ubuntu-latest</gh:runs-on>
-      <gh:needs>build-and-test</gh:needs>
+      <gh:runs-on>
+        <gh:runner>ubuntu-latest</gh:runner>
+      </gh:runs-on>
+      <gh:needs>
+        <gh:item>build-and-test</gh:item>
+      </gh:needs>
       <gh:if>needs.build-and-test.outputs.should_continue == 'true'</gh:if>
       <gh:outputs>
         <gh:output name="has_tag">has_tag</gh:output>
@@ -193,13 +203,16 @@
           </gh:run>
         </gh:step>
       </gh:steps>
-    </gh:job>
-
-    <!-- Block C: Check Success of Previous Build -->
+    </gh:job>    <!-- Block C: Check Success of Previous Build -->
     <gh:job id="check-previous-build">
       <gh:name>🔍 Check Previous Build</gh:name>
-      <gh:runs-on>ubuntu-latest</gh:runs-on>
-      <gh:needs>[build-and-test, check-tag]</gh:needs>
+      <gh:runs-on>
+        <gh:runner>ubuntu-latest</gh:runner>
+      </gh:runs-on>
+      <gh:needs>
+        <gh:item>build-and-test</gh:item>
+        <gh:item>check-tag</gh:item>
+      </gh:needs>
       <gh:if>needs.build-and-test.outputs.should_continue == 'true' &amp;&amp; needs.check-tag.outputs.skip_to_publish != 'true'</gh:if>
       <gh:outputs>
         <gh:output name="previous_success">previous_success</gh:output>
@@ -220,21 +233,25 @@
             #   - Exclude current run from analysis
             #   - Set previous_success output variable
             #   - If previous build failed, set skip_to_publish=true
-            
-            pwsh -File "./scripts/Get-PreviousBuildStatus.ps1" -Token "${{ secrets.GITHUB_TOKEN }}" -Repository "${{ github.repository }}" -Branch "${{ github.ref_name }}" -CurrentRunId "${{ github.run_id }}"
+              pwsh -File "./scripts/Get-PreviousBuildStatus.ps1" -Token "${{ secrets.GITHUB_TOKEN }}" -Repository "${{ github.repository }}" -Branch "${{ github.ref_name }}" -CurrentRunId "${{ github.run_id }}"
           </gh:run>
           <gh:env>
-            <gh:variable name="GITHUB_TOKEN">${{ secrets.GITHUB_TOKEN }}</gh:variable>
+            <gh:var name="GITHUB_TOKEN">${{ secrets.GITHUB_TOKEN }}</gh:var>
           </gh:env>
         </gh:step>
       </gh:steps>
     </gh:job>
 
-    <!-- Block D: Diff Check -->
-    <gh:job id="diff-check">
+    <!-- Block D: Diff Check -->    <gh:job id="diff-check">
       <gh:name>📊 Diff Check</gh:name>
-      <gh:runs-on>ubuntu-latest</gh:runs-on>
-      <gh:needs>[build-and-test, check-tag, check-previous-build]</gh:needs>
+      <gh:runs-on>
+        <gh:runner>ubuntu-latest</gh:runner>
+      </gh:runs-on>
+      <gh:needs>
+        <gh:item>build-and-test</gh:item>
+        <gh:item>check-tag</gh:item>
+        <gh:item>check-previous-build</gh:item>
+      </gh:needs>
       <gh:if>needs.build-and-test.outputs.should_continue == 'true' &amp;&amp; needs.check-tag.outputs.skip_to_publish != 'true' &amp;&amp; needs.check-previous-build.outputs.skip_to_publish != 'true' &amp;&amp; needs.check-previous-build.outputs.previous_success == 'true'</gh:if>
       <gh:outputs>
         <gh:output name="has_changes">has_changes</gh:output>
@@ -265,21 +282,26 @@
             #   - Set has_changes=true if significant changes found
             #   - Set skip_to_summary=true if no changes (has_changes=false)
             #   - Support force_publish input to override decision
-            
-            pwsh -File "./scripts/Compare-ChangesFromLastPublish.ps1" -Repository "${{ github.repository }}" -CurrentCommit "${{ github.sha }}" -ForcePublish "${{ inputs.force_publish }}"
+              pwsh -File "./scripts/Compare-ChangesFromLastPublish.ps1" -Repository "${{ github.repository }}" -CurrentCommit "${{ github.sha }}" -ForcePublish "${{ inputs.force_publish }}"
           </gh:run>
           <gh:env>
-            <gh:variable name="GITHUB_TOKEN">${{ secrets.GITHUB_TOKEN }}</gh:variable>
+            <gh:var name="GITHUB_TOKEN">${{ secrets.GITHUB_TOKEN }}</gh:var>
           </gh:env>
         </gh:step>
       </gh:steps>
     </gh:job>
 
-    <!-- Block P: Pack &amp; Publish -->
-    <gh:job id="pack-and-publish">
+    <!-- Block P: Pack &amp; Publish -->    <gh:job id="pack-and-publish">
       <gh:name>📦 Pack &amp; Publish</gh:name>
-      <gh:runs-on>ubuntu-latest</gh:runs-on>
-      <gh:needs>[build-and-test, check-tag, check-previous-build, diff-check]</gh:needs>      <gh:if>|
+      <gh:runs-on>
+        <gh:runner>ubuntu-latest</gh:runner>
+      </gh:runs-on>
+      <gh:needs>
+        <gh:item>build-and-test</gh:item>
+        <gh:item>check-tag</gh:item>
+        <gh:item>check-previous-build</gh:item>
+        <gh:item>diff-check</gh:item>
+      </gh:needs><gh:if>|
         always() &amp;&amp; (
           needs.build-and-test.outputs.should_continue == 'false' ||
           needs.check-tag.outputs.skip_to_publish == 'true' ||
@@ -352,11 +374,10 @@
             #   - Upload to GitHub Packages registry
             #   - Set output variables with package details
             #   - Handle authentication with GitHub token
-            
-            pwsh -File "./scripts/Publish-GitHubPackage.ps1" -ReleaseVersion "${{ steps.version.outputs.release_version }}" -DebugVersion "${{ steps.version.outputs.debug_version }}" -HasTag "${{ needs.check-tag.outputs.has_tag }}" -Token "${{ secrets.GITHUB_TOKEN }}"
+              pwsh -File "./scripts/Publish-GitHubPackage.ps1" -ReleaseVersion "${{ steps.version.outputs.release_version }}" -DebugVersion "${{ steps.version.outputs.debug_version }}" -HasTag "${{ needs.check-tag.outputs.has_tag }}" -Token "${{ secrets.GITHUB_TOKEN }}"
           </gh:run>
           <gh:env>
-            <gh:variable name="GITHUB_TOKEN">${{ secrets.GITHUB_TOKEN }}</gh:variable>
+            <gh:var name="GITHUB_TOKEN">${{ secrets.GITHUB_TOKEN }}</gh:var>
           </gh:env>
         </gh:step>
 
@@ -374,9 +395,16 @@
 
     <!-- Block Z: Summary -->
     <gh:job id="summary">
-      <gh:name>📋 Summary</gh:name>
-      <gh:runs-on>ubuntu-latest</gh:runs-on>
-      <gh:needs>[build-and-test, check-tag, check-previous-build, diff-check, pack-and-publish]</gh:needs>
+      <gh:name>📋 Summary</gh:name>      <gh:runs-on>
+        <gh:runner>ubuntu-latest</gh:runner>
+      </gh:runs-on>
+      <gh:needs>
+        <gh:item>build-and-test</gh:item>
+        <gh:item>check-tag</gh:item>
+        <gh:item>check-previous-build</gh:item>
+        <gh:item>diff-check</gh:item>
+        <gh:item>pack-and-publish</gh:item>
+      </gh:needs>
       <gh:if>always()</gh:if>
 
       <gh:steps>

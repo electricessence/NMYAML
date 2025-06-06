@@ -39,16 +39,21 @@ public class ValidateCommand : AsyncCommand<ValidateSettings>
 
 			var fileExt = Path.GetExtension(settings.FilePath).ToLowerInvariant();
 			var results = new List<ValidationResult>();
-			ValidationSummary summary;
-
-			if (fileExt == ".xml")
+			ValidationSummary summary;			if (fileExt == ".xml")
 			{
 				// XML Validation
-				var schemaPath = settings.SchemaPath ?? GetDefaultSchemaPath();
+				var schemaPath = settings.SchemaPath;
 				if (settings.Verbose)
 				{
 					AnsiConsole.MarkupLine($"[blue]Validating XML file: {settings.FilePath}[/]");
-					AnsiConsole.MarkupLine($"[blue]Using XSD schema: {schemaPath}[/]");
+					if (schemaPath != null)
+					{
+						AnsiConsole.MarkupLine($"[blue]Using XSD schema: {schemaPath}[/]");
+					}
+					else
+					{
+						AnsiConsole.MarkupLine($"[blue]Validating XML syntax only (no schema provided)[/]");
+					}
 				}
 
 				await AnsiConsole.Status()
@@ -145,13 +150,6 @@ public class ValidateCommand : AsyncCommand<ValidateSettings>
 				AnsiConsole.WriteException(ex);
 			}
 
-			return 1;
-		}
-	}
-
-	private static string GetDefaultSchemaPath()
-	{
-		var baseDir = AppDomain.CurrentDomain.BaseDirectory;
-		return Path.Combine(baseDir, "github-actions-schema.xsd");
+			return 1;		}
 	}
 }

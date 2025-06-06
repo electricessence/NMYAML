@@ -89,6 +89,7 @@ Parameters:
 - **ValidateInput** - Validate the input XML against an XSD schema
 - **XsdFile** - Path to the XSD schema for validation
 - **ShowOutput** - Display the transformation output
+- **UseNamespaces** - Use XML namespaces
 
 ### Manage-YamlSchema.ps1
 
@@ -180,23 +181,6 @@ The toolkit provides a complete workflow for managing XML schemas with namespace
    ```powershell
    .\Manage-YamlSchema.ps1 -Action combine
    ```
-- **UseNamespaces** - Use XML namespaces
-
-### Manage-YamlSchema.ps1
-
-Schema management script:
-
-```powershell
-.\Manage-YamlSchema.ps1 [-Action <string>] [-NamespacedSchemaPath <string>] [-NonNamespacedSchemaPath <string>] [-OutputSchemaPath <string>] [-NamespacedXmlPath <string>] [-NonNamespacedXmlPath <string>]
-```
-
-Parameters:
-- **Action** - Management action (test, combine)
-- **NamespacedSchemaPath** - Path to the namespaced schema
-- **NonNamespacedSchemaPath** - Path to the non-namespaced schema
-- **OutputSchemaPath** - Path to save the combined schema
-- **NamespacedXmlPath** - Path to a namespaced XML sample
-- **NonNamespacedXmlPath** - Path to a non-namespaced XML sample
 
 ## Examples
 
@@ -223,3 +207,123 @@ Parameters:
 ```powershell
 .\Manage-YamlSchema.ps1 -Action combine
 ```
+
+# Scripts Documentation
+
+## Validation Shortcut Scripts
+
+These PowerShell scripts provide convenient shortcuts for common validation scenarios using the NMYAML CLI tool:
+
+### Validate-GitHubActionsXml.ps1
+Validates XML files against the GitHub Actions schema.
+
+```powershell
+# Basic validation
+.\Validate-GitHubActionsXml.ps1 -XmlPath "samples\dotnet-library-workflow.xml"
+
+# Detailed validation with verbose output
+.\Validate-GitHubActionsXml.ps1 -XmlPath "samples\github-workflow.xml" -Detailed -Verbose
+
+# Validation without colored output
+.\Validate-GitHubActionsXml.ps1 -XmlPath "samples\dotnet-library-workflow.xml" -NoColor
+```
+
+**Features:**
+- Automatically uses the GitHub Actions schema from `schemas\github-actions-schema.xsd`
+- Shows validation errors with line numbers and detailed messages
+- Supports verbose mode for debugging
+- Compatible with terminals that don't support ANSI colors
+
+### Validate-XmlSyntax.ps1
+Validates XML files for syntax errors only (no schema validation).
+
+```powershell
+# Check XML syntax only
+.\Validate-XmlSyntax.ps1 -XmlPath "samples\dotnet-library-workflow.xml"
+
+# Detailed syntax validation
+.\Validate-XmlSyntax.ps1 -XmlPath "samples\github-workflow.xml" -Detailed -Verbose
+```
+
+**Features:**
+- Fast syntax-only validation
+- Useful for checking if XML is well-formed
+- No schema dependencies required
+
+### Validate-YamlCli.ps1
+Validates YAML files using the NMYAML CLI tool.
+
+```powershell
+# Basic YAML syntax validation
+.\Validate-YamlCli.ps1 -YamlPath "output\dotnet-library-workflow.yml"
+
+# GitHub Actions specific validation
+.\Validate-YamlCli.ps1 -YamlPath "output\github-workflow.yml" -GitHubActions -Detailed
+
+# Export validation report
+.\Validate-YamlCli.ps1 -YamlPath "output\workflow.yml" -GitHubActions -ExportReport
+```
+
+**Features:**
+- YAML syntax validation
+- Optional GitHub Actions workflow structure validation
+- Export validation reports to JSON
+- Detailed error reporting with line numbers
+
+### Run-FullPipeline.ps1
+Complete XML-to-YAML pipeline with validation and transformation.
+
+```powershell
+# Full pipeline: validate XML → transform → validate YAML
+.\Run-FullPipeline.ps1 -XmlPath "samples\dotnet-library-workflow.xml"
+
+# Custom output path with detailed logging
+.\Run-FullPipeline.ps1 -XmlPath "samples\github-workflow.xml" -OutputPath "output\my-workflow.yml" -Detailed -Verbose
+
+# Skip validation steps
+.\Run-FullPipeline.ps1 -XmlPath "samples\workflow.xml" -SkipXmlValidation -SkipYamlValidation -Force
+```
+
+**Features:**
+- Three-step pipeline: XML validation → transformation → YAML validation
+- Optional steps can be skipped
+- Automatic output path generation
+- Force overwrite existing files
+- Comprehensive error reporting
+
+## Usage Examples
+
+### Quick Schema Validation
+```powershell
+# Validate the dotnet library workflow against GitHub Actions schema
+.\Validate-GitHubActionsXml.ps1 samples\dotnet-library-workflow.xml
+```
+
+### Complete Workflow Processing
+```powershell
+# Process XML through complete pipeline
+.\Run-FullPipeline.ps1 samples\dotnet-library-workflow.xml
+
+# Output will be in samples\dotnet-library-workflow.yml
+```
+
+### Debugging Validation Issues
+```powershell
+# Get detailed information about validation failures
+.\Validate-GitHubActionsXml.ps1 samples\dotnet-library-workflow.xml -Detailed -Verbose
+```
+
+## Prerequisites
+
+All scripts require:
+- The NMYAML CLI tool to be built (`dotnet build` in the project root)
+- PowerShell 5.1 or PowerShell Core 6+
+- .NET 9.0 SDK
+
+## Error Handling
+
+All scripts:
+- Exit with code 0 on success
+- Exit with code 1 on validation failures or errors
+- Provide detailed error messages and suggestions
+- Support `--no-color` for CI/CD environments
