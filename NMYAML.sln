@@ -1,0 +1,30 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.2.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NMYAML.CLI", "CLI\NMYAML.CLI\NMYAML.CLI.csproj", "{89170C38-3FCE-D2E6-4DCF-3B3A24E02602}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NMYAML.CLI.Tests", "CLI\NMYAML.CLI.Tests\NMYAML.CLI.Tests.csproj", "{F826E9C0-889B-49A5-700B-A2DC9D723D75}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{89170C38-3FCE-D2E6-4DCF-3B3A24E02602}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{89170C38-3FCE-D2E6-4DCF-3B3A24E02602}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{89170C38-3FCE-D2E6-4DCF-3B3A24E02602}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{89170C38-3FCE-D2E6-4DCF-3B3A24E02602}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F826E9C0-889B-49A5-700B-A2DC9D723D75}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F826E9C0-889B-49A5-700B-A2DC9D723D75}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F826E9C0-889B-49A5-700B-A2DC9D723D75}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F826E9C0-889B-49A5-700B-A2DC9D723D75}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {8388EECA-DE66-4309-BEEA-5DE605B79BF3}
+	EndGlobalSection
+EndGlobal

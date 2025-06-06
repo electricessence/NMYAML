@@ -194,14 +194,13 @@
       <xs:element name="max-parallel" type="xs:int" minOccurs="0"/>
     </xs:all>
   </xs:complexType>
-
   <!-- Matrix -->
   <xs:complexType name="MatrixType">
-    <xs:sequence>
+    <xs:choice maxOccurs="unbounded">
       <xs:element name="include" type="gh:MatrixIncludeType" minOccurs="0" maxOccurs="unbounded"/>
       <xs:element name="exclude" type="gh:MatrixExcludeType" minOccurs="0" maxOccurs="unbounded"/>
-      <xs:any processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
-    </xs:sequence>
+      <xs:any processContents="lax" minOccurs="0" namespace="##other"/>
+    </xs:choice>
   </xs:complexType>
 
   <!-- Matrix include/exclude -->

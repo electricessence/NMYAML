@@ -1,0 +1,412 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gh:workflow xmlns:gh="http://github.com/actions/1.0">
+  <gh:name>Build &amp; Publish .NET Library</gh:name>
+  <gh:run-name>[${{ github.ref_name }}] .NET Library CI/CD Pipeline</gh:run-name>
+  
+  <gh:on>
+    <gh:push>
+      <gh:branches>
+        <gh:branch>main</gh:branch>
+        <gh:branch>develop</gh:branch>
+        <gh:branch>feature/*</gh:branch>
+        <gh:branch>release/*</gh:branch>
+      </gh:branches>
+      <gh:paths>
+        <gh:path>src/**</gh:path>
+        <gh:path>**/*.csproj</gh:path>
+        <gh:path>**/*.sln</gh:path>
+        <gh:path>tests/**</gh:path>
+      </gh:paths>
+    </gh:push>
+    <gh:pull_request>
+      <gh:branches>
+        <gh:branch>main</gh:branch>
+        <gh:branch>develop</gh:branch>
+      </gh:branches>
+    </gh:pull_request>
+    <gh:workflow_dispatch>
+      <gh:inputs>
+        <gh:input name="force_publish" type="boolean" description="Force publish even if no changes detected" default="false" required="false"/>
+        <gh:input name="skip_tests" type="boolean" description="Skip test execution (not recommended)" default="false" required="false"/>
+      </gh:inputs>
+    </gh:workflow_dispatch>
+  </gh:on>
+
+  <gh:env>
+    <gh:variable name="DOTNET_VERSION">8.0.x</gh:variable>
+    <gh:variable name="BUILD_CONFIGURATION">Debug</gh:variable>
+    <gh:variable name="PUBLISH_CONFIGURATION">Release</gh:variable>
+    <gh:variable name="NUGET_PACKAGES_PATH">~/.nuget/packages</gh:variable>
+  </gh:env>
+
+  <gh:concurrency>
+    <gh:group>${{ github.workflow }}-${{ github.ref }}</gh:group>
+    <gh:cancel-in-progress>true</gh:cancel-in-progress>
+  </gh:concurrency>
+
+  <gh:permissions>
+    <gh:contents>read</gh:contents>
+    <gh:packages>write</gh:packages>
+    <gh:actions>read</gh:actions>
+  </gh:permissions>
+
+  <gh:jobs>
+    <!-- Block A: Build &amp; Test -->
+    <gh:job id="build-and-test">
+      <gh:name>🔨 Build &amp; Test</gh:name>
+      <gh:runs-on>ubuntu-latest</gh:runs-on>
+      <gh:outputs>
+        <gh:output name="build_success">build_success</gh:output>
+        <gh:output name="test_success">test_success</gh:output>
+        <gh:output name="should_continue">should_continue</gh:output>
+      </gh:outputs>
+      
+      <gh:steps>
+        <gh:step>
+          <gh:name>📥 Checkout Repository</gh:name>
+          <gh:uses>actions/checkout@v4</gh:uses>
+          <gh:with>
+            <gh:param name="fetch-depth">0</gh:param>
+          </gh:with>
+        </gh:step>
+
+        <gh:step>
+          <gh:name>⚙️ Setup .NET</gh:name>
+          <gh:uses>actions/setup-dotnet@v4</gh:uses>
+          <gh:with>
+            <gh:param name="dotnet-version">${{ env.DOTNET_VERSION }}</gh:param>
+            <gh:param name="cache">true</gh:param>
+          </gh:with>
+        </gh:step>
+
+        <gh:step>
+          <gh:name>📦 Restore Dependencies</gh:name>
+          <gh:run>dotnet restore --verbosity minimal</gh:run>
+        </gh:step>
+
+        <gh:step>
+          <gh:name>🔨 Build Library (Debug)</gh:name>
+          <gh:id>build</gh:id>
+          <gh:run>|
+            # PowerShell script: Build-DotNetLibrary.ps1
+            # Purpose: Build the .NET library in Debug configuration
+            # Returns: Build success/failure status with detailed error reporting
+            # Expected behavior:
+            #   - Build in Debug configuration for optimal test performance
+            #   - Capture build errors and warnings
+            #   - Set build_success output variable
+            #   - If build fails, format errors for easy diagnosis
+            #   - Exit with appropriate status code
+            
+            pwsh -File "./scripts/Build-DotNetLibrary.ps1" -Configuration "${{ env.BUILD_CONFIGURATION }}"
+          </gh:run>
+          <gh:continue-on-error>true</gh:continue-on-error>
+        </gh:step>
+
+        <gh:step>
+          <gh:name>🧪 Run Tests (Using Debug Build)</gh:name>
+          <gh:id>test</gh:id>
+          <gh:if>steps.build.outputs.build_success == 'true' &amp;&amp; inputs.skip_tests != 'true'</gh:if>
+          <gh:run>|
+            # PowerShell script: Test-DotNetLibrary.ps1
+            # Purpose: Run tests using the existing Debug build (no rebuild)
+            # Returns: Test success/failure status with detailed results
+            # Expected behavior:
+            #   - Use --no-build flag to avoid rebuilding
+            #   - Run with coverage collection
+            #   - Generate test reports in multiple formats
+            #   - Set test_success output variable
+            #   - Upload test results and coverage data
+            
+            pwsh -File "./scripts/Test-DotNetLibrary.ps1" -NoBuild -Configuration "${{ env.BUILD_CONFIGURATION }}"
+          </gh:run>
+          <gh:continue-on-error>true</gh:continue-on-error>
+        </gh:step>
+
+        <gh:step>
+          <gh:name>📊 Upload Test Results</gh:name>
+          <gh:if>always() &amp;&amp; steps.test.outcome != 'skipped'</gh:if>
+          <gh:uses>actions/upload-artifact@v4</gh:uses>
+          <gh:with>
+            <gh:param name="name">test-results</gh:param>
+            <gh:param name="path">TestResults/</gh:param>
+            <gh:param name="retention-days">7</gh:param>
+          </gh:with>
+        </gh:step>
+
+        <gh:step>
+          <gh:name>📋 Set Job Outputs</gh:name>
+          <gh:id>outputs</gh:id>
+          <gh:run>|            # Determine overall success and whether to continue the workflow
+            BUILD_SUCCESS="${{ steps.build.outputs.build_success || 'false' }}"
+            TEST_SUCCESS="${{ steps.test.outputs.test_success || 'true' }}"
+            
+            # Continue if build succeeded and tests passed (or were skipped)
+            if [[ "$BUILD_SUCCESS" == "true" &amp;&amp; "$TEST_SUCCESS" == "true" ]]; then
+              echo "should_continue=true" >> $GITHUB_OUTPUT
+            else
+              echo "should_continue=false" >> $GITHUB_OUTPUT
+            fi
+            
+            echo "build_success=$BUILD_SUCCESS" >> $GITHUB_OUTPUT
+            echo "test_success=$TEST_SUCCESS" >> $GITHUB_OUTPUT
+          </gh:run>
+        </gh:step>
+      </gh:steps>
+    </gh:job>
+
+    <!-- Block B: Check for Tag -->
+    <gh:job id="check-tag">
+      <gh:name>🏷️ Check for Tag</gh:name>
+      <gh:runs-on>ubuntu-latest</gh:runs-on>
+      <gh:needs>build-and-test</gh:needs>
+      <gh:if>needs.build-and-test.outputs.should_continue == 'true'</gh:if>
+      <gh:outputs>
+        <gh:output name="has_tag">has_tag</gh:output>
+        <gh:output name="tag_name">tag_name</gh:output>
+        <gh:output name="skip_to_publish">skip_to_publish</gh:output>
+      </gh:outputs>
+
+      <gh:steps>
+        <gh:step>
+          <gh:name>📥 Checkout Repository</gh:name>
+          <gh:uses>actions/checkout@v4</gh:uses>
+          <gh:with>
+            <gh:param name="fetch-depth">0</gh:param>
+          </gh:with>
+        </gh:step>
+
+        <gh:step>
+          <gh:name>🏷️ Check for Commit Tag</gh:name>
+          <gh:id>tag-check</gh:id>
+          <gh:run>|
+            # PowerShell script: Get-CommitTag.ps1
+            # Purpose: Check if current commit has an associated tag
+            # Returns: Tag information or null, sets workflow direction
+            # Expected behavior:
+            #   - Check if current commit SHA has associated tags
+            #   - Filter for version tags (e.g., v1.0.0, 1.0.0)
+            #   - Set has_tag and tag_name output variables
+            #   - If tag exists, set skip_to_publish=true
+            
+            pwsh -File "./scripts/Get-CommitTag.ps1" -CommitSha "${{ github.sha }}"
+          </gh:run>
+        </gh:step>
+      </gh:steps>
+    </gh:job>
+
+    <!-- Block C: Check Success of Previous Build -->
+    <gh:job id="check-previous-build">
+      <gh:name>🔍 Check Previous Build</gh:name>
+      <gh:runs-on>ubuntu-latest</gh:runs-on>
+      <gh:needs>[build-and-test, check-tag]</gh:needs>
+      <gh:if>needs.build-and-test.outputs.should_continue == 'true' &amp;&amp; needs.check-tag.outputs.skip_to_publish != 'true'</gh:if>
+      <gh:outputs>
+        <gh:output name="previous_success">previous_success</gh:output>
+        <gh:output name="skip_to_publish">skip_to_publish</gh:output>
+      </gh:outputs>
+
+      <gh:steps>
+        <gh:step>
+          <gh:name>🔍 Query Previous Build Status</gh:name>
+          <gh:id>previous-build</gh:id>
+          <gh:run>|
+            # PowerShell script: Get-PreviousBuildStatus.ps1
+            # Purpose: Query the status of the previous workflow run
+            # Returns: Boolean indicating previous build success/failure
+            # Expected behavior:
+            #   - Use GitHub API to query previous workflow runs
+            #   - Filter for same workflow on same branch
+            #   - Exclude current run from analysis
+            #   - Set previous_success output variable
+            #   - If previous build failed, set skip_to_publish=true
+            
+            pwsh -File "./scripts/Get-PreviousBuildStatus.ps1" -Token "${{ secrets.GITHUB_TOKEN }}" -Repository "${{ github.repository }}" -Branch "${{ github.ref_name }}" -CurrentRunId "${{ github.run_id }}"
+          </gh:run>
+          <gh:env>
+            <gh:variable name="GITHUB_TOKEN">${{ secrets.GITHUB_TOKEN }}</gh:variable>
+          </gh:env>
+        </gh:step>
+      </gh:steps>
+    </gh:job>
+
+    <!-- Block D: Diff Check -->
+    <gh:job id="diff-check">
+      <gh:name>📊 Diff Check</gh:name>
+      <gh:runs-on>ubuntu-latest</gh:runs-on>
+      <gh:needs>[build-and-test, check-tag, check-previous-build]</gh:needs>
+      <gh:if>needs.build-and-test.outputs.should_continue == 'true' &amp;&amp; needs.check-tag.outputs.skip_to_publish != 'true' &amp;&amp; needs.check-previous-build.outputs.skip_to_publish != 'true' &amp;&amp; needs.check-previous-build.outputs.previous_success == 'true'</gh:if>
+      <gh:outputs>
+        <gh:output name="has_changes">has_changes</gh:output>
+        <gh:output name="skip_to_summary">skip_to_summary</gh:output>
+      </gh:outputs>
+
+      <gh:steps>
+        <gh:step>
+          <gh:name>📥 Checkout Repository</gh:name>
+          <gh:uses>actions/checkout@v4</gh:uses>
+          <gh:with>
+            <gh:param name="fetch-depth">0</gh:param>
+          </gh:with>
+        </gh:step>
+
+        <gh:step>
+          <gh:name>📊 Compare Changes from Last Publish</gh:name>
+          <gh:id>diff-analysis</gh:id>
+          <gh:run>|
+            # PowerShell script: Compare-ChangesFromLastPublish.ps1
+            # Purpose: Complex diff analysis to detect meaningful changes since last publish
+            # Returns: Boolean - true (no changes/same), false (changes detected)
+            # Expected behavior:
+            #   - Compare with last published version tag/commit
+            #   - Analyze source code changes (ignore docs, build configs)
+            #   - Check for API changes, new features, bug fixes
+            #   - Ignore whitespace and comment-only changes
+            #   - Set has_changes=true if significant changes found
+            #   - Set skip_to_summary=true if no changes (has_changes=false)
+            #   - Support force_publish input to override decision
+            
+            pwsh -File "./scripts/Compare-ChangesFromLastPublish.ps1" -Repository "${{ github.repository }}" -CurrentCommit "${{ github.sha }}" -ForcePublish "${{ inputs.force_publish }}"
+          </gh:run>
+          <gh:env>
+            <gh:variable name="GITHUB_TOKEN">${{ secrets.GITHUB_TOKEN }}</gh:variable>
+          </gh:env>
+        </gh:step>
+      </gh:steps>
+    </gh:job>
+
+    <!-- Block P: Pack &amp; Publish -->
+    <gh:job id="pack-and-publish">
+      <gh:name>📦 Pack &amp; Publish</gh:name>
+      <gh:runs-on>ubuntu-latest</gh:runs-on>
+      <gh:needs>[build-and-test, check-tag, check-previous-build, diff-check]</gh:needs>      <gh:if>|
+        always() &amp;&amp; (
+          needs.build-and-test.outputs.should_continue == 'false' ||
+          needs.check-tag.outputs.skip_to_publish == 'true' ||
+          needs.check-previous-build.outputs.skip_to_publish == 'true' ||
+          (needs.diff-check.result == 'success' &amp;&amp; needs.diff-check.outputs.has_changes == 'true')
+        )
+      </gh:if>
+      <gh:outputs>
+        <gh:output name="published_version">published_version</gh:output>
+        <gh:output name="published_debug_version">published_debug_version</gh:output>
+        <gh:output name="package_url">package_url</gh:output>
+      </gh:outputs>
+
+      <gh:steps>
+        <gh:step>
+          <gh:name>📥 Checkout Repository</gh:name>
+          <gh:uses>actions/checkout@v4</gh:uses>
+          <gh:with>
+            <gh:param name="fetch-depth">0</gh:param>
+          </gh:with>
+        </gh:step>
+
+        <gh:step>
+          <gh:name>⚙️ Setup .NET</gh:name>
+          <gh:uses>actions/setup-dotnet@v4</gh:uses>
+          <gh:with>
+            <gh:param name="dotnet-version">${{ env.DOTNET_VERSION }}</gh:param>
+            <gh:param name="cache">true</gh:param>
+          </gh:with>
+        </gh:step>
+
+        <gh:step>
+          <gh:name>🏷️ Generate Package Version</gh:name>
+          <gh:id>version</gh:id>
+          <gh:run>|
+            # PowerShell script: New-PackageVersion.ps1
+            # Purpose: Generate appropriate version suffix based on build context
+            # Returns: Formatted version strings for release and debug packages
+            # Expected behavior:
+            #   - Read VersionPrefix from project file
+            #   - For tagged commits: No suffix (3.2.1) + debug suffix (3.2.1-debug)
+            #   - For non-tagged commits: Generate timestamp suffix
+            #     - Main branch: 3.2.1-250403-1330
+            #     - Other branches: 3.2.1-branch-250403-1330
+            #   - Set version output variables for subsequent steps
+            
+            pwsh -File "./scripts/New-PackageVersion.ps1" -HasTag "${{ needs.check-tag.outputs.has_tag }}" -TagName "${{ needs.check-tag.outputs.tag_name }}" -BranchName "${{ github.ref_name }}"
+          </gh:run>
+        </gh:step>
+
+        <gh:step>
+          <gh:name>🔨 Build Release Configuration</gh:name>
+          <gh:run>|
+            # Build in Release configuration for packaging
+            dotnet build --configuration ${{ env.PUBLISH_CONFIGURATION }} --no-restore --verbosity minimal
+          </gh:run>
+        </gh:step>
+
+        <gh:step>
+          <gh:name>📦 Pack &amp; Publish to GitHub Packages</gh:name>
+          <gh:id>publish</gh:id>
+          <gh:run>|
+            # PowerShell script: Publish-GitHubPackage.ps1
+            # Purpose: Pack and publish NuGet packages to GitHub Packages
+            # Returns: Published package information and URLs
+            # Expected behavior:
+            #   - Pack library with generated version(s)
+            #   - For tagged releases: Publish both release and debug variants
+            #   - For non-tagged: Publish single suffixed version
+            #   - Upload to GitHub Packages registry
+            #   - Set output variables with package details
+            #   - Handle authentication with GitHub token
+            
+            pwsh -File "./scripts/Publish-GitHubPackage.ps1" -ReleaseVersion "${{ steps.version.outputs.release_version }}" -DebugVersion "${{ steps.version.outputs.debug_version }}" -HasTag "${{ needs.check-tag.outputs.has_tag }}" -Token "${{ secrets.GITHUB_TOKEN }}"
+          </gh:run>
+          <gh:env>
+            <gh:variable name="GITHUB_TOKEN">${{ secrets.GITHUB_TOKEN }}</gh:variable>
+          </gh:env>
+        </gh:step>
+
+        <gh:step>
+          <gh:name>📋 Upload Package Artifacts</gh:name>
+          <gh:uses>actions/upload-artifact@v4</gh:uses>
+          <gh:with>
+            <gh:param name="name">nuget-packages</gh:param>
+            <gh:param name="path">**/*.nupkg</gh:param>
+            <gh:param name="retention-days">30</gh:param>
+          </gh:with>
+        </gh:step>
+      </gh:steps>
+    </gh:job>
+
+    <!-- Block Z: Summary -->
+    <gh:job id="summary">
+      <gh:name>📋 Summary</gh:name>
+      <gh:runs-on>ubuntu-latest</gh:runs-on>
+      <gh:needs>[build-and-test, check-tag, check-previous-build, diff-check, pack-and-publish]</gh:needs>
+      <gh:if>always()</gh:if>
+
+      <gh:steps>
+        <gh:step>
+          <gh:name>📋 Generate Workflow Summary</gh:name>
+          <gh:run>|
+            # PowerShell script: Write-WorkflowSummary.ps1
+            # Purpose: Generate comprehensive summary of workflow execution
+            # Returns: Formatted summary for GitHub Actions summary page
+            # Expected behavior:
+            #   - Collect results from all previous jobs
+            #   - Format execution timeline and decision points
+            #   - Show build/test results, tag status, diff analysis
+            #   - Display published package information (if any)
+            #   - Generate markdown summary for GitHub Actions UI
+            #   - Include links to artifacts and packages
+            #   - Provide actionable next steps or recommendations
+            
+            pwsh -File "./scripts/Write-WorkflowSummary.ps1" `
+              -BuildSuccess "${{ needs.build-and-test.outputs.build_success }}" `
+              -TestSuccess "${{ needs.build-and-test.outputs.test_success }}" `
+              -HasTag "${{ needs.check-tag.outputs.has_tag }}" `
+              -TagName "${{ needs.check-tag.outputs.tag_name }}" `
+              -PreviousSuccess "${{ needs.check-previous-build.outputs.previous_success }}" `
+              -HasChanges "${{ needs.diff-check.outputs.has_changes }}" `
+              -PublishedVersion "${{ needs.pack-and-publish.outputs.published_version }}" `
+              -PackageUrl "${{ needs.pack-and-publish.outputs.package_url }}"
+          </gh:run>
+        </gh:step>
+      </gh:steps>
+    </gh:job>
+  </gh:jobs>
+</gh:workflow>
