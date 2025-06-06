@@ -54,17 +54,6 @@ $ErrorActionPreference = "Stop"
 $ScriptRoot = Split-Path -Parent $MyInvocation.MyCommand.Path
 $CliProject = Join-Path $ScriptRoot "CLI\NMYAML.CLI\NMYAML.CLI.csproj"
 
-# Validate inputs
-if (-not (Test-Path $Path)) {
-    Write-Error "YAML file not found: $Path"
-    exit 1
-}
-
-if (-not (Test-Path $CliProject)) {
-    Write-Error "NMYAML CLI project not found: $CliProject"
-    exit 1
-}
-
 # Build validation arguments
 $validationArgs = @("validate", $Path)
 
@@ -72,15 +61,6 @@ if ($Detailed) { $validationArgs += "--detailed" }
 if ($VerboseOutput) { $validationArgs += "--verbose" }
 if ($NoColor) { $validationArgs += "--no-color" }
 
-# Run validation
-try {
-    $result = & dotnet run --project $CliProject --configuration Release -- @validationArgs
-    $exitCode = $LASTEXITCODE
-    
-    Write-Output $result
-    exit $exitCode
-}
-catch {
-    Write-Error "Validation error: $($_.Exception.Message)"
-    exit 1
-}
+# Run validation - let the CLI handle all validation logic
+& dotnet run --project $CliProject --configuration Release -- @validationArgs
+exit $LASTEXITCODE
