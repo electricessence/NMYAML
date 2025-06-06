@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<gh:workflow xmlns:gh="http://github.com/actions/1.0">
+<gh:workflow xmlns:gh="http://github.com/actions/1.0" 
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://github.com/actions/1.0 ../schemas/github-actions-schema.xsd">
+             
   <gh:name>Build &amp; Publish .NET Library</gh:name>
   <gh:run-name>[${{ github.ref_name }}] .NET Library CI/CD Pipeline</gh:run-name>
   
