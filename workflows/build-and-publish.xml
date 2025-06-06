@@ -190,12 +190,10 @@ cat test-workflow.yml</gh:run>
                 <gh:step>
                     <gh:name>Build CLI tool</gh:name>
                     <gh:run>dotnet build CLI/NMYAML.CLI --configuration Release</gh:run>
-                </gh:step>
-
-                <gh:step>
+                </gh:step>                <gh:step>
                     <gh:name>Transform this workflow XML to YAML</gh:name>
                     <gh:run>cd CLI/NMYAML.CLI
-dotnet run --configuration Release -- transform "../../workflows/build-and-publish.xml" "../../.github/workflows/build-and-publish.yml" --xslt "../../xslt/xml-to-yaml.xslt"
+dotnet run --configuration Release -- transform "../../workflows/build-and-publish.xml" "../../.github/workflows/build-and-publish.yml" --xslt "../../xslt/github-actions-transform.xslt"
 echo "Generated YAML workflow:"
 cat "../../.github/workflows/build-and-publish.yml"</gh:run>
                 </gh:step>
